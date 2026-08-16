@@ -6,5 +6,18 @@
       "quoteStyle": "single",
       "semicolons": "asNeeded"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["./src/db/**.ts", "./src/db/schema/**.ts"],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedKeys": "off",
+            "organizeImports": "on",
+          }
+        }
+      }
+    }
+  ]
 }

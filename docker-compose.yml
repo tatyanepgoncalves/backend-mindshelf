@@ -1,0 +1,30 @@
+services:
+  folhear_postgres:
+    image: bitnami/postgresql:latest
+    container_name: folhear_postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRESQL_DATABASE: ${DB_NAME}
+      POSTGRESQL_USERNAME: ${DB_USERNAME}
+      POSTGRESQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/bitnami/postgresql
+      - ./docker/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+
+  folhear_redis:
+    image: bitnami/redis:latest
+    container_name: folhear_redis
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/bitnami/redis
+
+volumes:
+  postgres_data:
+  redis_data:
