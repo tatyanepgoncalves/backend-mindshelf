@@ -8,6 +8,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
+import { userRoutes } from './routes/users/index.js'
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -45,3 +46,5 @@ app.register(fastifySwaggerUi, {
 })
 
 app.get('/', () => 'Bem vindo ao Folhear Server!')
+
+app.register(userRoutes)
