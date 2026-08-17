@@ -6,6 +6,8 @@ services:
     env_file:
       - .env
     environment:
+      TZ: ${DB_TZ}
+      POSTGRES_TIMEZONE: ${DB_TIMEZONE}
       POSTGRESQL_DATABASE: ${DB_NAME}
       POSTGRESQL_USERNAME: ${DB_USERNAME}
       POSTGRESQL_PASSWORD: ${DB_PASSWORD}

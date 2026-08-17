@@ -95,6 +95,8 @@ DATABASE_URL="postgresql://user:password@localhost:5432/folhear_db"
 JWT_SECRET="seu-jwt-secret-super-seguro"
 PORT=3333
 NODE_ENV="development"
+DB_TZ="ADD_TZ"
+DB_TIMEZONE="ADD_TIMEZONE"
 ```
 
 ### 3. Rodar as migrações do banco de dados (Drizzle)
