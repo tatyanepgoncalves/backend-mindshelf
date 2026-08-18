@@ -9,12 +9,16 @@
   },
   "overrides": [
     {
-      "includes": ["./src/db/**.ts", "./src/db/schema/**.ts"],
+      "includes": [
+        "./src/db/**/*.ts",
+        "./src/db/schema/**/*.ts",
+        "./src/schemas/**/*.ts"
+      ],
       "assist": {
         "actions": {
           "source": {
             "useSortedKeys": "off",
-            "organizeImports": "on",
+            "organizeImports": "on"
           }
         }
       }
