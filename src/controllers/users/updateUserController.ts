@@ -27,8 +27,6 @@ export class UpdateUserController {
       return reply.status(200).send(result)
       // biome-ignore lint/suspicious/noExplicitAny: it's necessary
     } catch (error: any) {
-      
-
       if (error instanceof UserNotFoundError) {
         return reply.status(404).send({ message: error.message })
       }

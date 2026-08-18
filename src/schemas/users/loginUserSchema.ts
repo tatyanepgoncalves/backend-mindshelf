@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const loginUserSchema = {
-  tags: ["Autenticação"],
-  summary: "Autentica um usuário e retorna um token.",
-  description: "Autentica um usuário e retorna um token de acesso.",
+  tags: ['Autenticação'],
+  summary: 'Autentica um usuário e retorna um token.',
+  description: 'Autentica um usuário e retorna um token de acesso.',
   body: z.object({
     email: z.string().email().optional(),
     phone: z.string().min(10).max(15).optional(),
@@ -34,6 +34,6 @@ export const loginUserSchema = {
       message: z.string(),
     }),
   },
-};
+}
 
-export type LoginUserSchema = z.infer<typeof loginUserSchema.body>;
+export type LoginUserSchema = z.infer<typeof loginUserSchema.body>

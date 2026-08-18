@@ -23,6 +23,7 @@ export async function authMiddleware(
     return reply.status(401).send({ message: 'Formato do token inválido.' })
   }
 
+  // biome-ignore lint/style/useDestructuring: it's necessary
   const token = parts[1]
 
   try {
@@ -56,14 +57,14 @@ export async function authMiddleware(
     } else {
       // Cache Miss: Buscar no Banco (Drizzle)
       const userFromDb = await db.query.users.findFirst({
-        where: and(eq(schema.users.id, userId), isNull(schema.users.deletedAt)),
         columns: {
+          address: true,
           email: true,
           name: true,
           phone: true,
           role: true,
-          address: true,
         },
+        where: and(eq(schema.users.id, userId), isNull(schema.users.deletedAt)),
       })
 
       if (!userFromDb) {
@@ -71,10 +72,10 @@ export async function authMiddleware(
       }
 
       userData = {
-        name: userFromDb.name,
-        email: userFromDb.email ?? null,
-        phone: userFromDb.phone ?? null,
         address: userFromDb.address ?? null,
+        email: userFromDb.email ?? null,
+        name: userFromDb.name,
+        phone: userFromDb.phone ?? null,
         role: userFromDb.role,
       }
 
@@ -84,11 +85,11 @@ export async function authMiddleware(
 
     // Injetar o usuário na request
     request.user = {
+      address: userData.address ?? '',
+      email: userData.email,
       id: userId,
       nome: userData.name,
-      email: userData.email,
-      phone: userData.phone ?? "",
-      address: userData.address ?? "",
+      phone: userData.phone ?? '',
       role: userData.role,
     }
   } catch (err) {

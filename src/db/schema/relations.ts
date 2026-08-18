@@ -1,16 +1,16 @@
-import { relations } from "drizzle-orm";
-import { users } from "./users.js";
-import { loans } from "./loans.js";
-import { reservations } from "./reservations.js";
-import { books } from "./books.js";
-import { literaryGenres } from "./literaryGenres.js";
-import { authTokens } from "./authTokens.js";
+import { relations } from 'drizzle-orm'
+import { authTokens } from './authTokens.js'
+import { books } from './books.js'
+import { literaryGenres } from './literaryGenres.js'
+import { loans } from './loans.js'
+import { reservations } from './reservations.js'
+import { users } from './users.js'
 
 // USERS RELATIONS
 export const usersRelations = relations(users, ({ many }) => ({
   loans: many(loans),
   reservations: many(reservations),
-  tokens: many(authTokens)
+  tokens: many(authTokens),
 }))
 
 // AUTH TOKENS RELATIONS
@@ -20,7 +20,6 @@ export const authTokensRelations = relations(authTokens, ({ one }) => ({
     references: [users.id],
   }),
 }))
-
 
 // LITERARY GENRE RELATIONS
 export const literaryGenreRelations = relations(literaryGenres, ({ many }) => ({
@@ -37,7 +36,7 @@ export const booksRelations = relations(books, ({ one, many }) => ({
   reservations: many(reservations),
 }))
 
-// LOANS RELATIONS 
+// LOANS RELATIONS
 export const loansRelations = relations(loans, ({ one }) => ({
   reader: one(users, {
     fields: [loans.readerId],
@@ -46,7 +45,7 @@ export const loansRelations = relations(loans, ({ one }) => ({
   book: one(books, {
     fields: [loans.bookId],
     references: [books.id],
-  })
+  }),
 }))
 
 // RESERVATIONS RELATIONS
@@ -58,5 +57,5 @@ export const reservationsRelations = relations(reservations, ({ one }) => ({
   book: one(books, {
     fields: [reservations.bookId],
     references: [books.id],
-  })
+  }),
 }))

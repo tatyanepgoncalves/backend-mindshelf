@@ -1,6 +1,6 @@
-import { FastifyReply, FastifyRequest } from "fastify"
-import { GetUserProfileService } from "../../services/users/getUserProfileService.js"
-import { UserNotFoundError } from "../../services/users/loginUserService.js"
+import type { FastifyReply, FastifyRequest } from 'fastify'
+import { GetUserProfileService } from '../../services/users/getUserProfileService.js'
+import { UserNotFoundError } from '../../services/users/loginUserService.js'
 
 export class GetUserProfileController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
@@ -9,15 +9,14 @@ export class GetUserProfileController {
 
       const getUserProfileService = new GetUserProfileService()
 
-      
       const result = await getUserProfileService.execute(userId)
 
       return reply.status(200).send(result)
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        return reply.status(404).send({ message: "Usuário não encontrado" })
+        return reply.status(404).send({ message: 'Usuário não encontrado' })
       }
-      return reply.status(500).send({ message: "Erro interno do servidor" })
+      return reply.status(500).send({ message: 'Erro interno do servidor' })
     }
   }
 }
