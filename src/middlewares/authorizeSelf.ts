@@ -8,8 +8,9 @@ export async function authorizeSelf(
   const { id } = request.params as { id: string }
   // biome-ignore lint/style/useDestructuring: it's necessary
   const user = request.user
+  const userId = request.user?.id
 
-  const isOwner = user.id === id
+  const isOwner = user.id === id || user.id === userId
 
   // If you are not the data owner and are not an admin, block it.
   if (!isOwner) {
