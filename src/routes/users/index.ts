@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify"
 import { createUserRoute } from "./createUserRoute.js"
 import { loginUserRoute } from "./loginUserRoute.js"
 import { logoutUserRoute } from "./logoutUserRoute.js"
+import { getUserProfileRoute } from "./getUserProfileRoute.js"
 
 // biome-ignore lint/suspicious/useAwait: it not necessary
 export async function userRoutes(app: FastifyInstance) {
@@ -10,5 +11,6 @@ export async function userRoutes(app: FastifyInstance) {
   app.register(loginUserRoute)
 
   // ROTAS COM AUTENTICAÇÃO NECESSÁRIA
+  app.register(getUserProfileRoute)
   app.register(logoutUserRoute)
 }
