@@ -15,7 +15,7 @@ export class UserAlreadyExistsError extends Error {
 }
 
 export class CreateUserService {
-  async execute({ name, email, phone, password }: CreateUserSchema) {
+  async execute({ name, email, phone, password, role }: CreateUserSchema) {
     // Executa tudo dentro de uma transação isolada
     return await db.transaction(async (tx) => {
       // Check if user already exists
@@ -38,6 +38,7 @@ export class CreateUserService {
           name,
           password: passwordHash,
           phone: formatPhone(phone),
+          role,
         })
         .returning()
 
@@ -69,6 +70,7 @@ export class CreateUserService {
           id: user.id,
           name: user.name,
           phone: user.phone ? formatPhone(user.phone) : user.phone,
+          role: user.role,
         },
       }
     })

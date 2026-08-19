@@ -6,9 +6,13 @@ export const createUserSchema = {
   tags: ['Autenticação'],
   body: z.object({
     name: z.string().min(2).max(100),
-    email: z.string().email().max(255),
+    email: z.string().email().max(255).optional(),
     phone: z.string().min(10).max(20).optional(),
     password: z.string().min(8).max(100),
+    role: z
+      .enum(['LEITOR', 'ADMIN', 'VOLUNTARIO'])
+      .default('LEITOR')
+      .optional(),
   }),
   response: {
     201: z.object({
@@ -19,6 +23,7 @@ export const createUserSchema = {
         name: z.string().min(2).max(100),
         email: z.string().email().max(255),
         phone: z.string().min(10).max(20).nullable().optional(),
+        role: z.enum(['LEITOR', 'ADMIN', 'VOLUNTARIO']).default('LEITOR'),
         createdAt: z.string(),
       }),
     }),

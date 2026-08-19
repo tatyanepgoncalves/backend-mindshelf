@@ -16,6 +16,7 @@ export class LoginUserController {
 
       const result = await loginUserService.execute(request.body)
 
+      console.log(result)
       return reply.status(200).send(result)
 
       // biome-ignore lint/suspicious/noExplicitAny: it's necessary
@@ -23,6 +24,8 @@ export class LoginUserController {
       if (error instanceof CredentialsInvalidError) {
         return reply.status(401).send({ message: error.message })
       }
+
+      console.log(error.message)
 
       if (error instanceof UserNotFoundError) {
         return reply.status(404).send({ message: error.message })
