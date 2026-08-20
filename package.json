@@ -9,10 +9,10 @@
   "main": "dist/server.js",
   "scripts": {
     "check": "ultracite check",
+    "db:studio": "drizzle-kit studio",
     "dev": "tsx --env-file=.env --watch src/server.ts",
     "fix": "ultracite fix",
-    "start": "node dist/server.js",
-    "db:studio": "drizzle-kit studio"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
