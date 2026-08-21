@@ -11,9 +11,9 @@ export const deleteGenreByIdSchema = {
   }),
   querystring: z.object({
     permanente: z
-      .string()
+      .union([z.boolean(), z.string()])
       .optional()
-      .transform((val) => val === 'true'),
+      .transform((val) => val === true || val === 'true'),
   }),
   response: {
     200: z.object({

@@ -19,7 +19,7 @@ export class DeleteGenreByIdController {
   ) {
     try {
       const genreId = request.params.id
-      const permanente = Boolean(request.query.permanente)
+      const permanente = request.query.permanente ?? false
       const userRole = request.user.role
       const deleteGenreByIdService = new DeleteGenreByIdService()
 
@@ -48,8 +48,3 @@ export class DeleteGenreByIdController {
     }
   }
 }
-
-
-
-
-
