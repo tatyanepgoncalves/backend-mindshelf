@@ -6,6 +6,7 @@ import type {
 import {
   GenreAlreadyExistsError,
   GenreNotFoundError,
+  UnauthorizedRestoreError,
   UpdateGenreService,
 } from '../../services/genres/updateGenreService.js'
 
@@ -19,21 +20,28 @@ export class UpdateGenreController {
   ) {
     const { id } = request.params
     const data = request.body
+    const userRole = request.user.role
     const updateGenreService = new UpdateGenreService()
 
     try {
-      const result = await updateGenreService.execute(id, data)
+      const result = await updateGenreService.execute(id, data, userRole)
 
       return reply.status(200).send(result)
     } catch (error) {
       if (error instanceof GenreNotFoundError) {
         return reply.status(404).send({ message: error.message })
       }
+
       if (error instanceof GenreAlreadyExistsError) {
         return reply.status(409).send({ message: error.message })
       }
 
-      throw error
+      if (error instanceof UnauthorizedRestoreError) {
+        return reply.status(403).send({ message: error.message })
+      }
+
+      console.error(error)
+      return reply.status(500).send({ message: 'Erro interno do servidor.' })
     }
   }
 }
