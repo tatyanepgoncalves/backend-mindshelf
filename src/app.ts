@@ -8,6 +8,7 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
+import { booksRoutes } from './routes/books/index.js'
 import { genresRoutes } from './routes/genres/index.js'
 import { userRoutes } from './routes/users/index.js'
 
@@ -50,3 +51,4 @@ app.get('/', () => 'Bem vindo ao Folhear Server!')
 
 app.register(userRoutes)
 app.register(genresRoutes)
+app.register(booksRoutes)

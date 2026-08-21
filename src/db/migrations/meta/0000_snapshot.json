@@ -1,5 +1,5 @@
 {
-  "id": "a7e65278-03b8-4332-922e-69c4abc701ed",
+  "id": "7e7f500e-cf70-46c1-b8fd-e5345ebf8797",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -118,12 +118,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "available_copies": {
-          "name": "available_copies",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "synopsis": {
           "name": "synopsis",
           "type": "text",
@@ -140,7 +134,7 @@
           "name": "isbn",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "location_library": {
           "name": "location_library",
@@ -494,6 +488,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "role": {
           "name": "role",

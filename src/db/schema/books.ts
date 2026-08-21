@@ -11,10 +11,9 @@ export const books = pgTable('books', {
     .references(() => literaryGenres.id, { onDelete: 'restrict' })
     .notNull(),
   totalCopies: integer('total_copies').notNull(),
-  availableCopies: integer('available_copies').notNull(),
   synopsis: text('synopsis'),
   coverUrl: text('cover_url'),
-  isbn: text('isbn').notNull().unique(),
+  isbn: text('isbn').unique(),
   locationLibrary: text('location_library'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
