@@ -7,15 +7,22 @@ export class GetBooksController {
     request: FastifyRequest<{ Querystring: GetBooksQuerySchema }>,
     reply: FastifyReply
   ) {
-    const { title, author, literaryGenreId } = request.query
+    const { title, author, genreIds } = request.query
     const getBooksService = new GetBooksService()
+
+    // Normaliza para sempre ser um array de strings (ou undefined)
+    let formattedGenreIds: string[] | undefined
+
+    if (genreIds) {
+      formattedGenreIds = Array.isArray(genreIds) ? genreIds : [genreIds]
+    }
 
     try {
       const result = await getBooksService.execute(
         request.user.role,
         title,
         author,
-        literaryGenreId
+        formattedGenreIds
       )
 
       return reply.status(200).send(result)

@@ -1,4 +1,4 @@
-import { and, asc, count, eq, isNull, type SQL } from 'drizzle-orm'
+import { and, asc, count, eq, ilike, isNull, type SQL } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime } from '../../lib/utils.js'
@@ -15,7 +15,7 @@ export class GetGenresService {
 
     // Filter 2 (optional): get books by name  (case-insensitive)
     if (name) {
-      conditions.push(eq(schema.literaryGenres.name, name))
+      conditions.push(ilike(schema.literaryGenres.name, `%${name}%`))
     }
 
     // Search for genres with grouping and book counts.
@@ -30,9 +30,10 @@ export class GetGenresService {
       })
       .from(schema.literaryGenres)
       .leftJoin(
-        schema.books,
-        eq(schema.literaryGenres.id, schema.books.literaryGenreId)
+        schema.booksToGenres,
+        eq(schema.literaryGenres.id, schema.booksToGenres.genreId)
       )
+      .leftJoin(schema.books, eq(schema.booksToGenres.bookId, schema.books.id))
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .groupBy(schema.literaryGenres.id)
       .orderBy(asc(schema.literaryGenres.name))

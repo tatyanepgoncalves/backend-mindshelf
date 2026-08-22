@@ -14,7 +14,7 @@ export const createBookSchema = {
     author: z.string().min(5).max(255),
     publisher: z.string().min(2).max(255).nullable(),
     year: z.string().min(1).max(4),
-    literaryGenreId: z.string().uuid(),
+    genreIds: z.array(z.string().uuid()).min(1, 'Informe ao menos um gênero.'),
     synopsis: z.string().nullable(),
     coverUrl: z.string().nullable(),
     isbn: z.string().nullable(),
@@ -27,12 +27,14 @@ export const createBookSchema = {
         id: z.string().uuid(),
         title: z.string().min(5).max(255),
         author: z.string().min(5).max(255),
-        publisher: z.string().min(5).max(255).nullable(),
+        publisher: z.string().min(2).max(255).nullable(),
         year: z.union([z.number(), z.string()]),
-        genre: z.object({
-          id: z.string().uuid(),
-          name: z.string(),
-        }),
+        genres: z.array(
+          z.object({
+            id: z.string().uuid(),
+            name: z.string(),
+          })
+        ),
         synopsis: z.string().nullable(),
         coverUrl: z.string().nullable(),
         isbn: z.string().nullable(),

@@ -1,10 +1,12 @@
 import { authTokens } from './authTokens.js'
 import { books } from './books.js'
+import { booksToGenres } from './booksToGenres.js'
 import { literaryGenres } from './literaryGenres.js'
 import { loans } from './loans.js'
 import {
   authTokensRelations,
   booksRelations,
+  booksToGenresRelations,
   literaryGenreRelations,
   loansRelations,
   reservationsRelations,
@@ -20,6 +22,7 @@ export const schema = {
   loans,
   reservations,
   authTokens,
+  booksToGenres,
 
   authTokensRelations,
   usersRelations,
@@ -27,4 +30,5 @@ export const schema = {
   literaryGenreRelations,
   loansRelations,
   reservationsRelations,
+  booksToGenresRelations,
 }

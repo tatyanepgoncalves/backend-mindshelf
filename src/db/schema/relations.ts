@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { authTokens } from './authTokens.js'
 import { books } from './books.js'
+import { booksToGenres } from './booksToGenres.js'
 import { literaryGenres } from './literaryGenres.js'
 import { loans } from './loans.js'
 import { reservations } from './reservations.js'
@@ -23,17 +24,26 @@ export const authTokensRelations = relations(authTokens, ({ one }) => ({
 
 // LITERARY GENRE RELATIONS
 export const literaryGenreRelations = relations(literaryGenres, ({ many }) => ({
-  books: many(books),
+  genresToBooks: many(booksToGenres),
 }))
 
 // BOOKS RELATIONS
-export const booksRelations = relations(books, ({ one, many }) => ({
-  literaryGenre: one(literaryGenres, {
-    fields: [books.literaryGenreId],
-    references: [literaryGenres.id],
-  }),
+export const booksRelations = relations(books, ({ many }) => ({
+  booksToGenres: many(booksToGenres),
   loans: many(loans),
   reservations: many(reservations),
+}))
+
+// BOOKS TO GENRES RELATIONS (Pivot Table)
+export const booksToGenresRelations = relations(booksToGenres, ({ one }) => ({
+  book: one(books, {
+    fields: [booksToGenres.bookId],
+    references: [books.id],
+  }),
+  genre: one(literaryGenres, {
+    fields: [booksToGenres.genreId],
+    references: [literaryGenres.id],
+  }),
 }))
 
 // LOANS RELATIONS

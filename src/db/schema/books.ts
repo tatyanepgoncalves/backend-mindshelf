@@ -1,5 +1,4 @@
 import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
-import { literaryGenres } from './literaryGenres.js'
 
 export const books = pgTable('books', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -7,9 +6,6 @@ export const books = pgTable('books', {
   author: text('author').notNull(),
   publisher: text('publisher'),
   year: integer('year'),
-  literaryGenreId: uuid('literary_genre_id')
-    .references(() => literaryGenres.id, { onDelete: 'restrict' })
-    .notNull(),
   synopsis: text('synopsis'),
   coverUrl: text('cover_url'),
   isbn: text('isbn').unique(),

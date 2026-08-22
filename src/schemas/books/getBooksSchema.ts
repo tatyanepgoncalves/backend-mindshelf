@@ -8,7 +8,9 @@ export const getBooksSchema = {
   querystring: z.object({
     title: z.string().optional(),
     author: z.string().optional(),
-    literaryGenreId: z.string().uuid().optional(),
+    genreIds: z
+      .union([z.array(z.string().uuid()), z.string().uuid()])
+      .optional(),
   }),
   response: {
     200: z.object({
@@ -19,13 +21,13 @@ export const getBooksSchema = {
           title: z.string(),
           author: z.string(),
           publisher: z.string().nullable(),
-          year: z.number(),
-          genre: z.object({
-            id: z.string().uuid(),
-            name: z.string(),
-          }),
-          totalCopies: z.number(),
-          availableCopies: z.number(),
+          year: z.union([z.number(), z.string()]),
+          genres: z.array(
+            z.object({
+              id: z.string().uuid(),
+              name: z.string(),
+            })
+          ),
           synopsis: z.string().nullable(),
           coverUrl: z.string().nullable(),
           isbn: z.string().nullable(),
@@ -36,12 +38,8 @@ export const getBooksSchema = {
         })
       ),
     }),
-    400: z.object({
-      message: z.string(),
-    }),
-    500: z.object({
-      message: z.string(),
-    }),
+    400: z.object({ message: z.string() }),
+    500: z.object({ message: z.string() }),
   },
 }
 
