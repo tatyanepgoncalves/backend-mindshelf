@@ -94,5 +94,5 @@ export const formatRelativeTime = (dateParam: Date | string) => {
   }
 
   // Passou de 24 horas: retorna a data completa com horário (ex: 07/08/2026, 08:49)
-  return formatDate(date)
+  return formatDate(date, true)
 }

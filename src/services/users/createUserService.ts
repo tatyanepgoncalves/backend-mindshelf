@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { env } from '../../config/env.js'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
-import { formatPhone, formatRelativeTime } from '../../lib/utils.js'
+import { formatRelativeTime } from '../../lib/utils.js'
 import type { CreateUserSchema } from '../../schemas/users/createUserSchema.js'
 
 // Erro personalizado para capturar o conflito de email e telefone (HTTP 409)
@@ -15,7 +15,7 @@ export class UserAlreadyExistsError extends Error {
 }
 
 export class CreateUserService {
-  async execute({ name, email, phone, password, role }: CreateUserSchema) {
+  async execute({ name, email, password, role }: CreateUserSchema) {
     // Executa tudo dentro de uma transação isolada
     return await db.transaction(async (tx) => {
       // Check if user already exists
@@ -37,7 +37,6 @@ export class CreateUserService {
           email,
           name,
           password: passwordHash,
-          phone: formatPhone(phone),
           role,
         })
         .returning()
@@ -47,7 +46,6 @@ export class CreateUserService {
         {
           email: user.email,
           id: user.id,
-          phone: user.phone,
         },
         env.JWT_SECRET,
         { expiresIn: '10d' }
@@ -69,7 +67,6 @@ export class CreateUserService {
           email: user.email,
           id: user.id,
           name: user.name,
-          phone: user.phone ? formatPhone(user.phone) : user.phone,
           role: user.role,
         },
       }

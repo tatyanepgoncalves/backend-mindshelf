@@ -6,9 +6,9 @@ export const createUserSchema = {
   tags: ['Autenticação'],
   body: z.object({
     name: z.string().min(2).max(100),
-    email: z.string().email().max(255).optional(),
+    email: z.string().email().max(255),
     phone: z.string().min(10).max(20).optional(),
-    password: z.string().min(8).max(100),
+    password: z.string().min(8),
     role: z
       .enum(['LEITOR', 'ADMIN', 'VOLUNTARIO'])
       .default('LEITOR')

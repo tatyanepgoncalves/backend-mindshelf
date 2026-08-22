@@ -6,7 +6,6 @@ export const loginUserSchema = {
   description: 'Autentica um usuário e retorna um token de acesso.',
   body: z.object({
     email: z.string().email().optional(),
-    phone: z.string().min(10).max(15).optional(),
     password: z.string(),
   }),
   response: {
@@ -16,8 +15,7 @@ export const loginUserSchema = {
       user: z.object({
         id: z.string().uuid(),
         name: z.string(),
-        email: z.string().email().nullable(),
-        phone: z.string().min(10).max(15).nullable(),
+        email: z.string().email(),
         createdAt: z.string(),
       }),
     }),
