@@ -96,3 +96,14 @@ export const formatRelativeTime = (dateParam: Date | string) => {
   // Passou de 24 horas: retorna a data completa com horário (ex: 07/08/2026, 08:49)
   return formatDate(date, true)
 }
+
+export function generateSlug(text: string): string {
+  return text
+    .normalize('NFD') // Decompõe caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9 -]/g, '') // Remove caracteres especiais
+    .replace(/\s+/g, '-') // Substitui espaços por hífen
+    .replace(/-+/g, '-') // Remove hífens duplicados
+}

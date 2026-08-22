@@ -26,6 +26,7 @@ export const createBookSchema = {
       book: z.object({
         id: z.string().uuid(),
         title: z.string().min(5).max(255),
+        slug: z.string(),
         author: z.string().min(5).max(255),
         publisher: z.string().min(2).max(255).nullable(),
         year: z.union([z.number(), z.string()]),

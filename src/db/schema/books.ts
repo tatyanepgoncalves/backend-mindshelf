@@ -3,6 +3,7 @@ import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 export const books = pgTable('books', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
   author: text('author').notNull(),
   publisher: text('publisher'),
   year: integer('year'),

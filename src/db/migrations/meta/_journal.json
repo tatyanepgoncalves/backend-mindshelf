@@ -22,6 +22,13 @@
       "when": 1787405835044,
       "tag": "0002_nifty_jocasta",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787438819139,
+      "tag": "0003_famous_peter_parker",
+      "breakpoints": true
     }
   ]
 }

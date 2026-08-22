@@ -1,7 +1,7 @@
 import { ilike, inArray } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
-import { formatRelativeTime } from '../../lib/utils.js'
+import { formatRelativeTime, generateSlug } from '../../lib/utils.js'
 import type { CreateBookBodySchema } from '../../schemas/books/createBookSchema.js'
 
 export class BookAlreadyRegisterError extends Error {
@@ -32,6 +32,8 @@ export class CreateBookService {
         throw new BookAlreadyRegisterError()
       }
 
+      const slug = generateSlug(bookDetails.title)
+
       //  Insert the book record into the 'books' table
       const [newBook] = await tx
         .insert(schema.books)
@@ -41,6 +43,7 @@ export class CreateBookService {
           isbn: bookDetails.isbn ?? null,
           locationLibrary: bookDetails.locationLibrary ?? null,
           publisher: bookDetails.publisher ?? null,
+          slug,
           synopsis: bookDetails.synopsis ?? null,
           title: bookDetails.title,
           year: Number(bookDetails.year),
@@ -70,6 +73,7 @@ export class CreateBookService {
           isbn: newBook.isbn,
           locationLibrary: newBook.locationLibrary,
           publisher: newBook.publisher,
+          slug: newBook.slug,
           synopsis: newBook.synopsis,
           title: newBook.title,
           year: newBook.year,

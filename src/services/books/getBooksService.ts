@@ -64,6 +64,7 @@ export class GetBooksService {
       isbn: book.isbn ?? null,
       locationLibrary: book.locationLibrary ?? null,
       publisher: book.publisher ?? null,
+      slug: book.slug,
       synopsis: book.synopsis ?? null,
       title: book.title,
       updatedAt: book.updatedAt ? formatRelativeTime(book.updatedAt) : null,
