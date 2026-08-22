@@ -10,7 +10,6 @@ export const books = pgTable('books', {
   literaryGenreId: uuid('literary_genre_id')
     .references(() => literaryGenres.id, { onDelete: 'restrict' })
     .notNull(),
-  totalCopies: integer('total_copies').notNull(),
   synopsis: text('synopsis'),
   coverUrl: text('cover_url'),
   isbn: text('isbn').unique(),
