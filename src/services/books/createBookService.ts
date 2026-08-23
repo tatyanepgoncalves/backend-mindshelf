@@ -10,6 +10,12 @@ export class BookAlreadyRegisterError extends Error {
   }
 }
 
+export class IsbnIncorretError extends Error {
+  constructor() {
+    super('O ISBN fornecido é inválido ou incorreto.')
+  }
+}
+
 export class CreateBookService {
   async execute(data: CreateBookBodySchema) {
     const { genreIds, ...bookDetails } = data
@@ -33,6 +39,17 @@ export class CreateBookService {
       }
 
       const slug = generateSlug(bookDetails.title)
+
+
+      if (bookDetails.isbn) {
+        const existingBookWithIsbn = await tx.query.books.findFirst({
+          where: ilike(schema.books.isbn, `%${bookDetails.isbn}%`),
+        })
+
+        if (existingBookWithIsbn) {
+          throw new IsbnIncorretError()
+        }
+      }
 
       //  Insert the book record into the 'books' table
       const [newBook] = await tx

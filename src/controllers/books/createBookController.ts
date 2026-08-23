@@ -3,6 +3,7 @@ import type { CreateBookBodySchema } from '../../schemas/books/createBookSchema.
 import {
   BookAlreadyRegisterError,
   CreateBookService,
+  IsbnIncorretError,
 } from '../../services/books/createBookService.js'
 
 export class CreateBookController {
@@ -15,6 +16,7 @@ export class CreateBookController {
 
       const result = await createBookController.execute(request.body)
 
+
       return reply.status(201).send(result)
 
       // biome-ignore lint/suspicious/noExplicitAny: it's necessary
@@ -23,11 +25,12 @@ export class CreateBookController {
         return reply.status(409).send({ message: error.message })
       }
 
-      if (error.code === '23505') {
+      if (error instanceof IsbnIncorretError) {
         return reply.status(409).send({
-          message: 'Conflito de dados: Este registro já existe.',
+          message: error.message
         })
       }
+    
 
       return reply.status(500).send({
         message: 'Erro interno ao processar o cadastro.',
