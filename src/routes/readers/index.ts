@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+import { deleteReaderBySlugRoute } from './deleteReaderBySlugRoute.js'
 import { getReaderBySlugRoute } from './getReaderBySlugRoute.js'
 import { getReadersRoute } from './getReadersRoute.js'
 import { updateReaderBySlugRoute } from './updateReaderBySlugRoute.js'
@@ -8,4 +9,5 @@ export async function readerRoutes(app: FastifyInstance) {
   app.register(getReadersRoute)
   app.register(getReaderBySlugRoute)
   app.register(updateReaderBySlugRoute)
+  app.register(deleteReaderBySlugRoute)
 }
