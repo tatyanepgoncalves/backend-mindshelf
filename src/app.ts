@@ -10,6 +10,7 @@ import {
 } from 'fastify-type-provider-zod'
 import { booksRoutes } from './routes/books/index.js'
 import { genresRoutes } from './routes/genres/index.js'
+import { readerRoutes } from './routes/readers/index.js'
 import { userRoutes } from './routes/users/index.js'
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -52,3 +53,4 @@ app.get('/', () => 'Bem vindo ao Folhear Server!')
 app.register(userRoutes)
 app.register(genresRoutes)
 app.register(booksRoutes)
+app.register(readerRoutes)
