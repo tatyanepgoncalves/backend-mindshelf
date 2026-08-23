@@ -7,7 +7,6 @@ export const createUserSchema = {
   body: z.object({
     name: z.string().min(2).max(100),
     email: z.string().email().max(255),
-    phone: z.string().min(10).max(20).optional(),
     password: z.string().min(8),
     role: z
       .enum(['LEITOR', 'ADMIN', 'VOLUNTARIO'])
@@ -22,7 +21,7 @@ export const createUserSchema = {
         id: z.string().uuid(),
         name: z.string().min(2).max(100),
         email: z.string().email().max(255),
-        phone: z.string().min(10).max(20).nullable().optional(),
+        slug: z.string(),
         role: z.enum(['LEITOR', 'ADMIN', 'VOLUNTARIO']).default('LEITOR'),
         createdAt: z.string(),
       }),

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { env } from '../../config/env.js'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
-import { formatRelativeTime } from '../../lib/utils.js'
+import { formatRelativeTime, generateSlug } from '../../lib/utils.js'
 import type { CreateUserSchema } from '../../schemas/users/createUserSchema.js'
 
 // Erro personalizado para capturar o conflito de email e telefone (HTTP 409)
@@ -15,12 +15,12 @@ export class UserAlreadyExistsError extends Error {
 }
 
 export class CreateUserService {
-  async execute({ name, email, password, role }: CreateUserSchema) {
+  async execute(data: CreateUserSchema) {
     // Executa tudo dentro de uma transação isolada
     return await db.transaction(async (tx) => {
       // Check if user already exists
       const userExists = await tx.query.users.findFirst({
-        where: eq(schema.users.email, email),
+        where: eq(schema.users.email, data.email),
       })
 
       if (userExists) {
@@ -28,16 +28,19 @@ export class CreateUserService {
       }
 
       // Password hash
-      const passwordHash = await hash(password, 10)
+      const passwordHash = await hash(data.password, 10)
+
+      const slug = generateSlug(data.name)
 
       // Create user
       const [user] = await tx
         .insert(schema.users)
         .values({
-          email,
-          name,
+          email: data.email,
+          name: data.name,
           password: passwordHash,
-          role,
+          role: data.role,
+          slug,
         })
         .returning()
 
@@ -68,6 +71,7 @@ export class CreateUserService {
           id: user.id,
           name: user.name,
           role: user.role,
+          slug: user.slug,
         },
       }
     })
