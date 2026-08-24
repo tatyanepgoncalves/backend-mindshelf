@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, type SQL, sql } from 'drizzle-orm'
+import { and, eq, isNull, type SQL, sql } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime } from '../../lib/utils.js'
@@ -12,8 +12,7 @@ export class LoansNotFoundError extends Error {
 
 export class GetLoansService {
   async execute(query: GetLoansQuerySchema, isAdmin = false) {
-    const { readerSlug, bookSlug, status, mes } = query
-
+    const { bookSlug, mes, readerSlug, status } = query
     const conditions: SQL[] = []
 
     if (!isAdmin) {
@@ -21,7 +20,7 @@ export class GetLoansService {
       conditions.push(isNull(schema.loans.deletedAt))
     }
 
-    // Se o filtro readerSlug for passado, busca o id do leitor correspondente
+    // Se o filtro readerSlug for passado, busca o id do livro correspondente
     if (readerSlug) {
       const reader = await db.query.users.findFirst({
         columns: {
@@ -40,7 +39,6 @@ export class GetLoansService {
         }
       }
     }
-
     // Se o filtro bookSlug for passado, busca o id do livro correspondente
     if (bookSlug) {
       const book = await db.query.books.findFirst({
@@ -49,15 +47,14 @@ export class GetLoansService {
       })
 
       if (book) {
-        conditions.push(eq(schema.loans.bookId, book.id))
+        conditions.push(eq(schema.loansItems.bookId, book.id))
       } else {
         // Se o livro informado não existir, retorna lista vazia imediatamente
         return { loans: [], message: 'Nenhum empréstimo encontrado.' }
       }
     }
-
     if (status) {
-      conditions.push(eq(schema.loans.status, status))
+      conditions.push(eq(schema.loansItems.status, status))
     }
 
     if (mes) {
@@ -70,50 +67,48 @@ export class GetLoansService {
       }
     }
 
-    // Busca os empréstimos com os relacionamentos de leitor e livro
-    const loans = await db.query.loans.findMany({
-      orderBy: desc(schema.loans.createdAt),
+    const loansList = await db.query.loans.findMany({
+      orderBy: (loans, { desc }) => [desc(loans.createdAt)],
       where: conditions.length > 0 ? and(...conditions) : undefined,
       with: {
-        book: true,
+        items: {
+          with: {
+            book: true,
+          },
+        },
         reader: true,
       },
     })
 
-    if (!loans) {
-      throw new LoansNotFoundError()
-    }
-
-    const isEmpty = loans.length === 0
+    const formattedLoans = loansList.map((loan) => ({
+      createdAt: loan.createdAt
+        ? formatRelativeTime(loan.createdAt)
+        : loan.createdAt,
+      id: loan.id, // 1 UUID único por agrupamento de empréstimo
+      items: loan.items.map((item) => ({
+        book: {
+          author: item.book.author,
+          id: item.book.id,
+          slug: item.book.slug,
+          title: item.book.title,
+        },
+        dueDate: item.dueDate ? formatRelativeTime(item.dueDate) : item.dueDate,
+        id: item.id,
+        returnDate: item.returnDate
+          ? formatRelativeTime(item.returnDate)
+          : null,
+        status: item.status,
+      })),
+      reader: {
+        id: loan.reader.id,
+        name: loan.reader.name,
+        slug: loan.reader.slug,
+      },
+    }))
 
     return {
-      loans: loans.map((loan) => ({
-        book: {
-          author: loan.book.author,
-          id: loan.book.id,
-          slug: loan.book.slug,
-          title: loan.book.title,
-        },
-        createdAt: loan.createdAt
-          ? formatRelativeTime(loan.createdAt)
-          : loan.createdAt,
-        deletedAt: loan.deletedAt ? formatRelativeTime(loan.deletedAt) : null,
-        dueDate: loan.dueDate ? formatRelativeTime(loan.dueDate) : loan.dueDate,
-        id: loan.id,
-        reader: {
-          id: loan.reader.id,
-          name: loan.reader.name,
-          slug: loan.reader.slug,
-        },
-        returnDate: loan.returnDate
-          ? formatRelativeTime(loan.returnDate)
-          : null,
-        status: loan.status,
-        updatedAt: loan.updatedAt ? formatRelativeTime(loan.updatedAt) : null,
-      })),
-      message: isEmpty
-        ? 'Nenhum empréstimo encontrado.'
-        : 'Empréstimos recuperados com sucesso.',
+      loans: formattedLoans,
+      message: 'Empréstimos recuperados com sucesso.',
     }
   }
 }

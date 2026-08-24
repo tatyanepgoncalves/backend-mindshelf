@@ -36,7 +36,7 @@ export class CreateLoanController {
       }
 
       return reply.status(400).send({
-        message: 'Erro  ao realizar o empréstimo.',
+        message: 'Erro ao realizar o empréstimo.',
       })
     }
   }

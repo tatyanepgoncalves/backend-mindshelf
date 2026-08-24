@@ -45,42 +45,52 @@ export class DuplicateBooksInRequestError extends Error {
 export class CreateLoanService {
   async execute(data: CreateLoanBodySchema) {
     const { readerId, books: requestedBooks } = data
-
     const bookIdsInRequest = requestedBooks.map((item) => item.bookId)
-    if (new Set(bookIdsInRequest).size !== bookIdsInRequest.length) {
-      throw new DuplicateBooksInRequestError()
-    }
 
     return await db.transaction(async (tx) => {
-      // Verifica se o leitor existe
+      // Verifica Leitor
       const existingReader = await tx.query.users.findFirst({
         where: and(
           eq(schema.users.id, readerId),
           isNull(schema.users.deletedAt)
         ),
       })
-
       if (!existingReader) {
-        throw new ReaderNotFoundError()
+        throw new Error('Leitor não encontrado.')
       }
 
-      // Busca empréstimos ativos atuais
-      const activeLoansCount = await tx.query.loans.findMany({
+      // Conta empréstimos ativos em `loanItems`
+      const activeItems = await tx.query.loansItems.findMany({
         where: and(
-          eq(schema.loans.readerId, readerId),
-          eq(schema.loans.status, 'ATIVO'),
-          isNull(schema.loans.deletedAt)
+          eq(schema.loansItems.status, 'ATIVO'),
+          isNull(schema.loansItems.deletedAt)
         ),
+        with: { loan: true },
       })
 
-      if (activeLoansCount.length + requestedBooks.length > 3) {
-        throw new MaxLoansExceededError(
-          activeLoansCount.length,
-          requestedBooks.length
+      const readerActiveCount = activeItems.filter(
+        (item) => item.loan.readerId === readerId
+      ).length
+
+      if (readerActiveCount + requestedBooks.length > 3) {
+        throw new Error(
+          `Limite excedido. O leitor já possui ${readerActiveCount} empréstimos ativos.`
         )
       }
 
-      // Busca livros
+      // Verifica conflito de livros já emprestados
+      const activeBookLoans = await tx.query.loansItems.findMany({
+        where: and(
+          inArray(schema.loansItems.bookId, bookIdsInRequest),
+          eq(schema.loansItems.status, 'ATIVO'),
+          isNull(schema.loansItems.deletedAt)
+        ),
+      })
+      if (activeBookLoans.length > 0) {
+        throw new Error('Um ou mais livros já possuem empréstimos ativos.')
+      }
+
+      // Busca livros do banco
       const booksFromDb = await tx.query.books.findMany({
         where: and(
           inArray(schema.books.id, bookIdsInRequest),
@@ -88,79 +98,62 @@ export class CreateLoanService {
         ),
       })
 
-      if (booksFromDb.length !== requestedBooks.length) {
-        throw new BookNotFoundError()
-      }
+      //  Cria 1 ÚNICO Registro de Loan (Cabeçalho)
+      const [newLoan] = await tx
+        .insert(schema.loans)
+        .values({ readerId })
+        .returning()
 
-      // Verifica conflito de empréstimo ativo
-      const activeBookLoans = await tx.query.loans.findMany({
-        where: and(
-          inArray(schema.loans.bookId, bookIdsInRequest),
-          eq(schema.loans.status, 'ATIVO'),
-          isNull(schema.loans.deletedAt)
-        ),
-        with: { book: true },
-      })
-
-      if (activeBookLoans.length > 0) {
-        const loanedBookTitle = activeBookLoans[0].book.title
-        throw new BookAlreadyLoanedError(loanedBookTitle)
-      }
-
-      // Prepara as inserções calculando a data retroativa (se enviada)
-      const loansToInsert = requestedBooks.map((item) => {
+      // Prepara e insere os itens em `loanItems`
+      const itemsToInsert = requestedBooks.map((item) => {
         const startDate = item.issuedAt ? new Date(item.issuedAt) : new Date()
-
         const dueDate = new Date(startDate)
         dueDate.setDate(dueDate.getDate() + item.dueDays)
 
         return {
           bookId: item.bookId,
-          createdAt: startDate, // Define a data da criação no passado se informada
+          createdAt: startDate,
           dueDate,
-          readerId,
+          loanId: newLoan.id,
           status: 'ATIVO' as const,
         }
       })
 
-      const insertedLoans = await tx
-        .insert(schema.loans)
-        .values(loansToInsert)
+      const insertedItems = await tx
+        .insert(schema.loansItems)
+        .values(itemsToInsert)
         .returning()
 
-      const formattedLoans = insertedLoans.map((loan) => {
-        // biome-ignore lint/style/noNonNullAssertion: it's necessary
-        const book = booksFromDb.find((b) => b.id === loan.bookId)!
-
-        return {
-          book: {
-            author: book.author,
-            id: book.id,
-            title: book.title,
-          },
-          createdAt: loan.createdAt
-            ? formatRelativeTime(loan.createdAt)
-            : loan.createdAt,
-          deletedAt: loan.deletedAt ? formatRelativeTime(loan.deletedAt) : null,
-          dueDate: loan.dueDate
-            ? formatRelativeTime(loan.dueDate)
-            : loan.dueDate,
-          id: loan.id,
+      // Formata a resposta agrupada
+      return {
+        loan: {
+          createdAt: newLoan.createdAt.toISOString(),
+          id: newLoan.id,
+          items: insertedItems.map((item) => {
+            // biome-ignore lint/style/noNonNullAssertion: it's necessarsy
+            const book = booksFromDb.find((b) => b.id === item.bookId)!
+            return {
+              book: {
+                author: book.author,
+                id: book.id,
+                title: book.title,
+              },
+              dueDate: item.dueDate
+                ? formatRelativeTime(item.dueDate)
+                : item.dueDate,
+              id: item.id,
+              returnDate: item.returnDate
+                ? formatRelativeTime(item.returnDate)
+                : null,
+              status: item.status,
+            }
+          }),
           reader: {
             id: existingReader.id,
             name: existingReader.name,
           },
-          returnDate: loan.returnDate
-            ? formatRelativeTime(loan.returnDate)
-            : null,
-          status: loan.status,
-          updatedAt: loan.updatedAt ? formatRelativeTime(loan.updatedAt) : null,
-        }
-      })
-
-      return {
-        loans: formattedLoans,
-        message: `Empréstimo de ${requestedBooks.length} livro(s) cadastrado com sucesso!`,
+        },
+        message: 'Empréstimo realizado com sucesso!',
       }
     })
   }

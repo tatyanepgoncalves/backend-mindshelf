@@ -25,8 +25,8 @@ export class GetLoansController {
         })
       }
 
-      return reply.status(500).send({
-        message: 'Erro interno ao buscar empréstimos.',
+      return reply.status(400).send({
+        message: 'Erro ao buscar empréstimos.',
       })
     }
   }

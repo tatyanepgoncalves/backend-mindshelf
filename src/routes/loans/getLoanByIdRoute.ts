@@ -8,7 +8,7 @@ export const getLoanByIdRoute: FastifyPluginCallbackZod = (app) => {
   const getLoanByIdController = new GetLoanByIdController()
 
   app.get(
-    '/loans/:id',
+    '/loan/:id',
     {
       preHandler: [authMiddleware, authorizeAdminOrVolunteer],
       schema: getLoanByIdSchema,

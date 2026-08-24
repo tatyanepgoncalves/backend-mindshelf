@@ -22,16 +22,21 @@ export const getLoanByIdSchema = {
             phone: z.string().nullable(),
             email: z.string().email(),
           }),
-          book: z.object({
-            id: z.string().uuid(),
-            title: z.string(),
-            author: z.string(),
-            slug: z.string().optional(),
-            coverUrl: z.string().nullable(),
-          }),
-          status: z.string(),
-          dueDate: z.union([z.string(), z.date()]),
-          returnDate: z.union([z.string(), z.date()]).nullable(),
+          items: z.array(
+            z.object({
+              id: z.string().uuid(),
+              book: z.object({
+                id: z.string().uuid(),
+                title: z.string(),
+                author: z.string(),
+                slug: z.string().optional(),
+                coverUrl: z.string().nullable(),
+              }),
+              status: z.string(),
+              dueDate: z.union([z.string(), z.date()]),
+              returnDate: z.union([z.string(), z.date()]).nullable(),
+            })
+          ),
           createdAt: z.union([z.string(), z.date()]),
           updatedAt: z.union([z.string(), z.date()]).nullable().optional(),
           deletedAt: z.union([z.string(), z.date()]).nullable().optional(),

@@ -30,18 +30,20 @@ export const getLoansSchema = {
             name: z.string(),
             slug: z.string().optional(),
           }),
-          book: z.object({
-            id: z.string().uuid(),
-            title: z.string(),
-            author: z.string(),
-            slug: z.string().optional(),
-          }),
-          status: z.string(),
-          dueDate: z.union([z.string(), z.date()]),
-          returnDate: z.union([z.string(), z.date()]).nullable(),
-          createdAt: z.union([z.string(), z.date()]),
-          updatedAt: z.union([z.string(), z.date()]).nullable().optional(),
-          deletedAt: z.union([z.string(), z.date()]).nullable().optional(),
+          items: z.array(
+            z.object({
+              id: z.string().uuid(),
+              book: z.object({
+                id: z.string().uuid(),
+                title: z.string(),
+                author: z.string(),
+                slug: z.string().optional(),
+              }),
+              status: z.string(),
+              dueDate: z.union([z.string(), z.date()]),
+              returnDate: z.union([z.string(), z.date()]).nullable(),
+            })
+          ),
         })
       ),
     }),
