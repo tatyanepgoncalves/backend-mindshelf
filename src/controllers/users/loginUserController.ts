@@ -28,7 +28,7 @@ export class LoginUserController {
         return reply.status(404).send({ message: error.message })
       }
 
-      return reply.status(500).send({ message: 'Erro interno do servidor' })
+      return reply.status(400).send({ message: 'Erro ao realizar login.' })
     }
   }
 }
