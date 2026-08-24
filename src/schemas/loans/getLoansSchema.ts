@@ -7,8 +7,8 @@ export const getLoansSchema = {
     'Endpoint para obter a lista de empréstimos com filtros opcionais',
   security: [{ bearerAuth: [] }],
   querystring: z.object({
-    readerId: z.string().uuid().optional(),
-    bookId: z.string().uuid().optional(),
+    readerSlug: z.string().optional(),
+    bookSlug: z.string().optional(),
     status: z
       .enum([
         'ATIVO', // Empréstimo em andamento dentro do prazo
@@ -28,12 +28,13 @@ export const getLoansSchema = {
           reader: z.object({
             id: z.string().uuid(),
             name: z.string(),
+            slug: z.string().optional(),
           }),
           book: z.object({
             id: z.string().uuid(),
             title: z.string(),
             author: z.string(),
-            slug: z.string(),
+            slug: z.string().optional(),
           }),
           status: z.string(),
           dueDate: z.union([z.string(), z.date()]),

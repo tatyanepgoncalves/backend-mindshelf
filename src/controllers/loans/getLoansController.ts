@@ -11,9 +11,11 @@ export class GetLoansController {
     reply: FastifyReply
   ) {
     const getLoansService = new GetLoansService()
+    const userRole = request.user?.role
+    const isAdmin = userRole === 'ADMIN' || userRole === 'VOLUNTARIO'
 
     try {
-      const result = await getLoansService.execute(request.query)
+      const result = await getLoansService.execute(request.query, isAdmin)
 
       return reply.status(200).send(result)
     } catch (error) {

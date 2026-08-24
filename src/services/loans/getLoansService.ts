@@ -1,4 +1,4 @@
-import { and, desc, eq, type SQL, sql } from 'drizzle-orm'
+import { and, desc, eq, isNull, type SQL, sql } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime } from '../../lib/utils.js'
@@ -11,17 +11,49 @@ export class LoansNotFoundError extends Error {
 }
 
 export class GetLoansService {
-  async execute(query: GetLoansQuerySchema) {
-    const { readerId, bookId, status, mes } = query
+  async execute(query: GetLoansQuerySchema, isAdmin = false) {
+    const { readerSlug, bookSlug, status, mes } = query
 
     const conditions: SQL[] = []
 
-    if (readerId) {
-      conditions.push(eq(schema.loans.readerId, readerId))
+    if (!isAdmin) {
+      // Se não for administrador, não mostra os emprestimos deletados
+      conditions.push(isNull(schema.loans.deletedAt))
     }
 
-    if (bookId) {
-      conditions.push(eq(schema.loans.bookId, bookId))
+    // Se o filtro readerSlug for passado, busca o id do leitor correspondente
+    if (readerSlug) {
+      const reader = await db.query.users.findFirst({
+        columns: {
+          id: true,
+        },
+        where: eq(schema.users.slug, readerSlug),
+      })
+
+      if (reader) {
+        conditions.push(eq(schema.loans.readerId, reader.id))
+      } else {
+        // Se o leitor informado não existir, retorna lista vazia imediatamente
+        return {
+          loans: [],
+          message: 'Nenhum empréstimo encontrado.',
+        }
+      }
+    }
+
+    // Se o filtro bookSlug for passado, busca o id do livro correspondente
+    if (bookSlug) {
+      const book = await db.query.books.findFirst({
+        columns: { id: true },
+        where: eq(schema.books.slug, bookSlug),
+      })
+
+      if (book) {
+        conditions.push(eq(schema.loans.bookId, book.id))
+      } else {
+        // Se o livro informado não existir, retorna lista vazia imediatamente
+        return { loans: [], message: 'Nenhum empréstimo encontrado.' }
+      }
     }
 
     if (status) {
@@ -43,20 +75,8 @@ export class GetLoansService {
       orderBy: desc(schema.loans.createdAt),
       where: conditions.length > 0 ? and(...conditions) : undefined,
       with: {
-        book: {
-          columns: {
-            author: true,
-            id: true,
-            slug: true,
-            title: true,
-          },
-        },
-        reader: {
-          columns: {
-            id: true,
-            name: true,
-          },
-        },
+        book: true,
+        reader: true,
       },
     })
 
@@ -83,6 +103,7 @@ export class GetLoansService {
         reader: {
           id: loan.reader.id,
           name: loan.reader.name,
+          slug: loan.reader.slug,
         },
         returnDate: loan.returnDate
           ? formatRelativeTime(loan.returnDate)
