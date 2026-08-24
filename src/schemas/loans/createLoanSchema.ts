@@ -4,15 +4,17 @@ export const createLoanSchema = {
   tags: ['Empréstimos'],
   summary: 'Cria novos empréstimos',
   description:
-    'Cria um ou mais empréstimos de livros para um leitor específico.',
+    'Cria um ou mais empréstimos de livros para um leitor específico, permitindo registro retroativo.',
   security: [{ bearerAuth: [] }],
   body: z.object({
     readerId: z.string().uuid(),
-    items: z
+    books: z
       .array(
         z.object({
           bookId: z.string().uuid(),
           dueDays: z.number().positive().int().min(1).max(30).default(7),
+          // Permite enviar uma data para retroagir o empréstimo
+          issuedAt: z.string().optional(),
         })
       )
       .min(1, 'Informe ao menos um livro para empréstimo.'),

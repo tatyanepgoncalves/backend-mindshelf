@@ -36,9 +36,9 @@ export const getLoansSchema = {
             slug: z.string(),
           }),
           status: z.string(),
-          dueDate: z.union([z.string(), z.date()]).nullable().optional(),
-          returnDate: z.union([z.string(), z.date()]).nullable().optional(),
-          createdAt: z.union([z.string(), z.date()]).nullable().optional(),
+          dueDate: z.union([z.string(), z.date()]),
+          returnDate: z.union([z.string(), z.date()]).nullable(),
+          createdAt: z.union([z.string(), z.date()]),
           updatedAt: z.union([z.string(), z.date()]).nullable().optional(),
           deletedAt: z.union([z.string(), z.date()]).nullable().optional(),
         })

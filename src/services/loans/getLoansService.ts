@@ -74,9 +74,11 @@ export class GetLoansService {
           slug: loan.book.slug,
           title: loan.book.title,
         },
-        createdAt: loan.createdAt ?? formatRelativeTime(loan.createdAt),
+        createdAt: loan.createdAt
+          ? formatRelativeTime(loan.createdAt)
+          : loan.createdAt,
         deletedAt: loan.deletedAt ? formatRelativeTime(loan.deletedAt) : null,
-        dueDate: loan.dueDate ?? formatRelativeTime(loan.dueDate),
+        dueDate: loan.dueDate ? formatRelativeTime(loan.dueDate) : loan.dueDate,
         id: loan.id,
         reader: {
           id: loan.reader.id,
