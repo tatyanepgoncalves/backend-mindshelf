@@ -25,11 +25,13 @@ export const createLoanSchema = {
       loans: z.array(
         z.object({
           id: z.string().uuid(),
-          book: z.object({
-            id: z.string().uuid(),
-            title: z.string(),
-            author: z.string(),
-          }),
+          book: z.array(
+            z.object({
+              id: z.string().uuid(),
+              title: z.string(),
+              author: z.string(),
+            })
+          ),
           reader: z.object({
             id: z.string().uuid(),
             name: z.string(),
