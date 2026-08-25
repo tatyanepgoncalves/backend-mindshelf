@@ -12,6 +12,7 @@ import { booksRoutes } from './routes/books/index.js'
 import { genresRoutes } from './routes/genres/index.js'
 import { loansRoutes } from './routes/loans/index.js'
 import { readerRoutes } from './routes/readers/index.js'
+import { reservationRoutes } from './routes/reservations/index.js'
 import { userRoutes } from './routes/users/index.js'
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -56,3 +57,4 @@ app.register(genresRoutes)
 app.register(booksRoutes)
 app.register(readerRoutes)
 app.register(loansRoutes)
+app.register(reservationRoutes)
