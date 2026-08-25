@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { createLoanRoute } from './createLoanRoute.js'
+import { deleteLoanItemRoute } from './deleteLoanItemRoute.js'
 import { getLoanByIdRoute } from './getLoanByIdRoute.js'
 import { getLoansRoute } from './getLoansRoute.js'
 import { updateStatusLoanByIdRoute } from './updateStatusLoanByIdRoute.js'
@@ -10,4 +11,5 @@ export async function loansRoutes(app: FastifyInstance) {
   app.register(getLoanByIdRoute)
   app.register(createLoanRoute)
   app.register(updateStatusLoanByIdRoute)
+  app.register(deleteLoanItemRoute)
 }
