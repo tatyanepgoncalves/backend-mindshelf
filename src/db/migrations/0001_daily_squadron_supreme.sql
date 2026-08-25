@@ -1,1 +1,0 @@
-ALTER TABLE "books" DROP COLUMN "total_copies";

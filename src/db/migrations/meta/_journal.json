@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1787351683561,
-      "tag": "0000_careless_peter_quill",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1787359272541,
-      "tag": "0001_daily_squadron_supreme",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1787405835044,
-      "tag": "0002_nifty_jocasta",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1787438819139,
-      "tag": "0003_famous_peter_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1787498109653,
-      "tag": "0004_glorious_weapon_omega",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1787580930212,
-      "tag": "0005_chilly_siren",
+      "when": 1787661863221,
+      "tag": "0000_quiet_unus",
       "breakpoints": true
     }
   ]
