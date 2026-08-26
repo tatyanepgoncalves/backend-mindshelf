@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { changeReservationBookRoute } from './changeReservationBookRoute.js'
 import { createReservationRoute } from './createReservationRoutes.js'
+import { deleteOrCancelReservationRoute } from './deleteOrCancelReservationRoute.js'
 import { getReservationsRoute } from './getReservationsRoute.js'
 import { updateReservationRoute } from './updateReservationRoute.js'
 
@@ -11,4 +12,5 @@ export async function reservationRoutes(app: FastifyInstance) {
 
   app.register(updateReservationRoute)
   app.register(changeReservationBookRoute)
+  app.register(deleteOrCancelReservationRoute)
 }
