@@ -8,6 +8,7 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
+    "build": "tsc",
     "check": "ultracite check",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
