@@ -38,8 +38,8 @@ export class DeleteGenreByIdService {
       await db.transaction(async (tx) => {
         // deletes the books linked to the literary genre
         await tx
-          .delete(schema.books)
-          .where(eq(schema.books.literaryGenreId, genreId))
+          .delete(schema.booksToGenres)
+          .where(eq(schema.booksToGenres.genreId, genreId))
 
         // deletes the literary genre
         await tx

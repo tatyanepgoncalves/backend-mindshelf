@@ -7,7 +7,7 @@ import {
   DeleteGenreByIdService,
   GenreNotFoundOrHadArquivedError,
   UnauthorizedHardDeleteError,
-} from '../../services/genres/DeleteGenreByIdService.js'
+} from '../../services/genres/deleteGenreByIdService.js'
 
 export class DeleteGenreByIdController {
   async handle(

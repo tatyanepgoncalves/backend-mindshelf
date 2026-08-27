@@ -21,9 +21,14 @@ export class GetReadersService {
       where: conditions.length > 0 ? and(...conditions) : undefined,
       with: {
         loans: {
-          where: isNull(schema.loans.returnDate), // Considera apenas empréstimos ativos (não devolvidos)
+          where: isNull(schema.loans.deletedAt), // Considera apenas empréstimos ativos (não devolvidos)
           with: {
-            book: true,
+            items: {
+              with: {
+                book: true,
+              },
+            },
+            reader: true,
           },
         },
         reservations: {

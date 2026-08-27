@@ -47,9 +47,9 @@ export async function authMiddleware(
     let userData: {
       name: string
       email: string
-      phone: string
+      phone: string | null
       role: 'LEITOR' | 'ADMIN' | 'VOLUNTARIO'
-      address: string
+      address: string | null
     }
 
     if (cachedUser) {
@@ -73,7 +73,7 @@ export async function authMiddleware(
 
       userData = {
         address: userFromDb.address ?? null,
-        email: userFromDb.email ?? null,
+        email: userFromDb.email ?? '',
         name: userFromDb.name,
         phone: userFromDb.phone ?? null,
         role: userFromDb.role,
@@ -91,9 +91,11 @@ export async function authMiddleware(
       nome: userData.name,
       phone: userData.phone ?? '',
       role: userData.role,
+      sub: userId,
     }
+    // biome-ignore lint/complexity/noUselessCatchBinding: it's necessary
+    // biome-ignore lint/correctness/noUnusedVariables: it's necessary
   } catch (err) {
-    console.log(`Auth Error: ${err}`)
     return reply.status(401).send({ message: 'Token inválida ou expirada.' })
   }
 }

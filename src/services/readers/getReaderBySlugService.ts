@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
-import { formatRelativeTime } from '../../lib/utils.js'
+import { formatDate, formatRelativeTime } from '../../lib/utils.js'
 
 export class SlugReaderNotFoundError extends Error {
   constructor() {
@@ -16,11 +16,18 @@ export class GetReaderBySlugService {
       where: and(eq(schema.users.slug, slug), isNull(schema.users.deletedAt)),
       with: {
         loans: {
+          where: isNull(schema.loans.deletedAt),
           with: {
-            book: true,
+            items: {
+              where: isNull(schema.loansItems.deletedAt),
+              with: {
+                book: true,
+              },
+            },
           },
         },
         reservations: {
+          where: isNull(schema.reservations.deletedAt),
           with: {
             book: true,
           },
@@ -56,21 +63,26 @@ export class GetReaderBySlugService {
     }
 
     // Reader Loans
-    const readerLoansFormatted = reader.loans.map((loan) => ({
-      book: {
-        author: loan.book.author,
-        id: loan.book.id,
-        slug: loan.book.slug,
-        title: loan.book.title,
-      },
-      createdAt: loan.createdAt,
-      deletedAt: loan.deletedAt ? formatRelativeTime(loan.deletedAt) : null,
-      dueDate: loan.dueDate,
-      id: loan.id,
-      returnDate: loan.returnDate ? formatRelativeTime(loan.returnDate) : null,
-      status: loan.status,
-      updatedAt: loan.updatedAt ? formatRelativeTime(loan.updatedAt) : null,
-    }))
+    const readerLoansFormatted = reader.loans.flatMap((loan) =>
+      loan.items.map((item) => ({
+        book: {
+          author: item.book.author,
+          id: item.book.id,
+          slug: item.book.slug,
+          title: item.book.title,
+        },
+        createdAt: formatRelativeTime(item.createdAt),
+        deletedAt: item.deletedAt ? formatRelativeTime(item.deletedAt) : null,
+        dueDate: item.dueDate ? formatDate(item.dueDate) : null,
+        id: item.id,
+        loanId: loan.id,
+        returnDate: item.returnDate
+          ? formatRelativeTime(item.returnDate)
+          : null,
+        status: item.status,
+        updatedAt: item.updatedAt ? formatRelativeTime(item.updatedAt) : null,
+      }))
+    )
 
     // Reader reservations
     const readerReservationFormatted = reader.reservations.map(
@@ -83,16 +95,13 @@ export class GetReaderBySlugService {
         },
         createdAt: reservation.createdAt
           ? formatRelativeTime(reservation.createdAt)
-          : reservation.createdAt,
+          : null,
         deletedAt: reservation.deletedAt
           ? formatRelativeTime(reservation.deletedAt)
           : null,
         id: reservation.id,
         reservationDate: reservation.reservationDate
-          ? formatRelativeTime(reservation.reservationDate)
-          : null,
-        reservedDate: reservation.reservedAt
-          ? formatRelativeTime(reservation.reservedAt)
+          ? formatDate(reservation.reservationDate)
           : null,
         status: reservation.status,
         updatedAt: reservation.updatedAt

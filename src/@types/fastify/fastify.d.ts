@@ -7,9 +7,10 @@ declare module 'fastify' {
       id: string
       nome: string
       email: string
-      phone: string
-      address: string
+      phone: string | null
+      address: string | null
       role: 'LEITOR' | 'ADMIN' | 'VOLUNTARIO'
+      sub: string
     }
   }
 }
