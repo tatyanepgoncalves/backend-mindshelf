@@ -39,7 +39,7 @@ app.register(fastifySwagger, {
       },
     },
     info: {
-      title: 'Folhear Server',
+      title: 'MindShelf Server',
       version: '1.0.0',
     },
   },
@@ -50,7 +50,7 @@ app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
 })
 
-app.get('/', () => 'Bem vindo ao Folhear Server!')
+app.get('/', () => 'Bem vindo ao MindShelf Server!')
 
 app.register(userRoutes)
 app.register(genresRoutes)

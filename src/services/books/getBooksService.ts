@@ -8,7 +8,7 @@ export class GetBooksService {
     roleUser?: string,
     title?: string,
     author?: string,
-    genreIds?: string[]
+    genre?: string
   ) {
     const isAdmin = roleUser === 'ADMIN'
     const conditions: SQL[] = []
@@ -25,7 +25,6 @@ export class GetBooksService {
       conditions.push(ilike(schema.books.author, `%${author}%`))
     }
 
-    // Busca os livros com seus respectivos relacionamentos
     const booksList = await db.query.books.findMany({
       orderBy: [asc(schema.books.title)],
       where: conditions.length > 0 ? and(...conditions) : undefined,
@@ -38,13 +37,15 @@ export class GetBooksService {
       },
     })
 
-    // Filtra por gênero em memória ou pela query caso `genreIds` esteja preenchido
-    const filteredBooks =
-      genreIds && genreIds.length > 0
-        ? booksList.filter((b) =>
-            b.booksToGenres.some((bg) => genreIds.includes(bg.genreId))
+    const filteredBooks = genre
+      ? booksList.filter((book) =>
+          book.booksToGenres.some((bookGenre) =>
+            bookGenre.genre?.name
+              .toLocaleLowerCase()
+              .includes(genre.toLocaleLowerCase())
           )
-        : booksList
+        )
+      : booksList
 
     const getBooksFormatted = filteredBooks.map((book) => ({
       author: book.author,

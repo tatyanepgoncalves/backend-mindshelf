@@ -8,9 +8,7 @@ export const getBooksSchema = {
   querystring: z.object({
     title: z.string().optional(),
     author: z.string().optional(),
-    genreIds: z
-      .union([z.array(z.string().uuid()), z.string().uuid()])
-      .optional(),
+    genre: z.string().optional(),
   }),
   response: {
     200: z.object({
