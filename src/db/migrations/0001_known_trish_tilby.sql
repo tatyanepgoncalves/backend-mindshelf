@@ -1,0 +1,1 @@
+ALTER TABLE "loans" ADD COLUMN "status" "loans_status" DEFAULT 'ATIVO';

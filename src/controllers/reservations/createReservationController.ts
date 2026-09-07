@@ -1,11 +1,11 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { CreateReservationBodySchema } from '../../schemas/reservations/createReservationSchema.js'
+import { CreateReservationService } from '../../services/reservation/createReservationService.js'
 import {
   BookAlreadyReservedError,
   BookNotFoundError,
-  CreateReservationService,
   ReaderNotFoundError,
-} from '../../services/reservation/createReservationService.js'
+} from '../../services/reservation/errors.js'
 
 export class CreateReservationController {
   async handle(
@@ -15,7 +15,12 @@ export class CreateReservationController {
     const createReservationService = new CreateReservationService()
 
     try {
-      const result = await createReservationService.execute(request.body)
+      // request.user.sub vem preenchido pelo authMiddleware do Fastify
+      const authenticatedUserId = request.user.sub
+      const result = await createReservationService.execute({
+        ...request.body,
+        authenticatedUserId,
+      })
       return reply.status(201).send(result)
     } catch (error) {
       if (

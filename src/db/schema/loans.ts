@@ -1,4 +1,5 @@
 import { pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { loansStatusEnum } from './enums.js'
 import { users } from './users.js'
 
 export const loans = pgTable('loans', {
@@ -6,6 +7,8 @@ export const loans = pgTable('loans', {
   readerId: uuid('reader_id')
     .references(() => users.id)
     .notNull(),
+
+  status: loansStatusEnum().default('ATIVO'),
 
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()

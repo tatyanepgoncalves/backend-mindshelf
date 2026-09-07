@@ -3,43 +3,42 @@ import { z } from 'zod'
 export const createReservationSchema = {
   tags: ['Reservas'],
   summary: 'Cria uma nova reserva de livro',
-  description: 'Endpoint para um leitor reservar um livro específico.',
+  description:
+    'Endpoint para reservar um ou mais livros (limite máximo de 3 itens ativos).',
   security: [{ bearerAuth: [] }],
-  body: z.object({
-    readerId: z.string().uuid(),
-    bookId: z.string().uuid(),
-    reservationDate: z.string().optional(),
-  }),
+  body: z
+    .object({
+      readerId: z.string().uuid().optional(),
+      bookIds: z.array(z.string().uuid()).optional(),
+      slugs: z.union([z.string(), z.array(z.string())]).optional(),
+      reservationDate: z.string().optional(),
+    })
+    .refine((data) => data.bookIds?.length || data.slugs, {
+      message: 'É necessário fornecer ao menos um bookId ou slug.',
+      path: ['bookIds'],
+    }),
   response: {
     201: z.object({
       message: z.string(),
-      reservation: z.object({
-        id: z.string().uuid(),
-        reader: z.object({
+      reservations: z.array(
+        z.object({
           id: z.string().uuid(),
-          name: z.string(),
-          contact: z.object({
-            email: z.string().email(),
-            phone: z.string().optional(),
-            address: z.string().optional(),
+          queuePosition: z.number(),
+          expiresAt: z.string().nullable(),
+          book: z.object({
+            id: z.string().uuid(),
+            title: z.string(),
+            slug: z.string(),
+            author: z.string(),
+            coverUrl: z.string().nullable(),
           }),
-        }),
-        book: z.object({
-          id: z.string().uuid(),
-          title: z.string(),
-          author: z.string(),
-          publisher: z.string(),
-          synopsis: z.string().nullable(),
-          coverUrl: z.string().nullable(),
-          locationLibrary: z.string().nullable(),
-          isbn: z.string().optional(),
-        }),
-        status: z.string(),
-        reservationDate: z.string().nullable(),
-        createdAt: z.string(),
-      }),
+          status: z.string(),
+          createdAt: z.string(),
+        })
+      ),
     }),
     400: z.object({ message: z.string() }),
+    403: z.object({ message: z.string() }),
     404: z.object({ message: z.string() }),
     409: z.object({ message: z.string() }),
     500: z.object({ message: z.string() }),
