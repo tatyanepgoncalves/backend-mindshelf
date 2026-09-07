@@ -1,11 +1,11 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { CreateReservationBodySchema } from '../../schemas/reservations/createReservationSchema.js'
-import { CreateReservationService } from '../../services/reservation/createReservationService.js'
 import {
-  BookAlreadyReservedError,
   BookNotFoundError,
   ReaderNotFoundError,
-} from '../../services/reservation/errors.js'
+} from '../../services/loans/createLoanService.js'
+import { BookAlreadyReservedError } from '../../services/reservation/changeReservationBookService.js'
+import { CreateReservationService } from '../../services/reservation/createReservationService.js'
 
 export class CreateReservationController {
   async handle(

@@ -4,10 +4,11 @@ import type {
   ChangeReservationBookParamsSchema,
 } from '../../schemas/reservations/changeReservationBookSchema.js'
 import {
+  BookAlreadyReservedError,
   BookNotFoundError,
   ChangeReservationBookService,
 } from '../../services/reservation/changeReservationBookService.js'
-import { BookAlreadyReservedError } from '../../services/reservation/createReservationService.js'
+
 import { ReservationNotFoundError } from '../../services/reservation/updateReservationService.js'
 
 export class ChangeReservationBookController {
