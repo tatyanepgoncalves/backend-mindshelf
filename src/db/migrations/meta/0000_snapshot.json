@@ -1,5 +1,5 @@
 {
-  "id": "3ebb66b1-d3bf-4f70-8f66-2a16ac647c81",
+  "id": "707217e4-af24-4197-82ad-193e06250124",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -406,6 +406,14 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "loans_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'ATIVO'"
         },
         "created_at": {
           "name": "created_at",

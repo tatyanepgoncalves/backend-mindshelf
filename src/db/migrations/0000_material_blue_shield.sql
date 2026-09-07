@@ -58,6 +58,7 @@ CREATE TABLE "loans_items" (
 CREATE TABLE "loans" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"reader_id" uuid NOT NULL,
+	"status" "loans_status" DEFAULT 'ATIVO',
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone,
 	"deleted_at" timestamp with time zone
