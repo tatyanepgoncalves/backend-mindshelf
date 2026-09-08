@@ -8,7 +8,7 @@ export const loans = pgTable('loans', {
     .references(() => users.id)
     .notNull(),
 
-  status: loansStatusEnum().default('ATIVO'),
+  status: loansStatusEnum('status').default('ATIVO'),
 
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
