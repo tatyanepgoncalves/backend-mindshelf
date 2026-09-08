@@ -2,15 +2,17 @@ import { and, count, eq, ilike, isNull, type SQL } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatDate, formatPhone, formatRelativeTime } from '../../lib/utils.js'
-import type { GetReservationsQuerySchema } from '../../schemas/reservations/getReservationsSchema.js'
-import { ReservationsNotFoundError } from './errors.js'
+import type { GetReservationsByUserQuerySchema } from '../../schemas/reservations/getReservationsByUserSchema.js'
 
-export class GetReservationsService {
-  async execute(query: GetReservationsQuerySchema) {
-    const { title, readerName, status, page, limit } = query
+export class GetReservationsByUserService {
+  async execute(userId: string, query: GetReservationsByUserQuerySchema) {
+    const { title, status, page, limit } = query
     const offset = (page - 1) * limit
 
-    const conditions: SQL[] = [isNull(schema.reservations.deletedAt)]
+    const conditions: SQL[] = [
+      eq(schema.reservations.readerId, userId),
+      isNull(schema.reservations.deletedAt),
+    ]
 
     if (status) {
       conditions.push(eq(schema.reservations.status, status))
@@ -20,30 +22,24 @@ export class GetReservationsService {
       conditions.push(ilike(schema.books.title, `%${title}%`))
     }
 
-    if (readerName) {
-      conditions.push(ilike(schema.users.name, `%${readerName}%`))
-    }
-
     const whereClause = and(...conditions)
 
-    // Contagem total garantindo os JOINs corretos
     const [totalResult] = await db
       .select({ total: count() })
       .from(schema.reservations)
       .innerJoin(schema.books, eq(schema.reservations.bookId, schema.books.id))
-      .innerJoin(
-        schema.users,
-        eq(schema.reservations.readerId, schema.users.id)
-      )
       .where(whereClause)
 
     const total = totalResult?.total ?? 0
 
     if (total === 0) {
-      throw new ReservationsNotFoundError()
+      return {
+        message: 'Reservas recuperadas com sucesso.',
+        pagination: { limit, page, total: 0, totalPages: 1 },
+        reservations: [],
+      }
     }
 
-    // 2. Busca paginada referenciando corretamente as tabelas nos JOINs
     const rows = await db
       .select({
         book: schema.books,
@@ -54,7 +50,7 @@ export class GetReservationsService {
       .innerJoin(schema.books, eq(schema.reservations.bookId, schema.books.id))
       .innerJoin(
         schema.users,
-        eq(schema.reservations.readerId, schema.users.id)
+        eq(schema.reservations.readerId, schema.reservations.readerId)
       )
       .where(whereClause)
       .orderBy(schema.reservations.createdAt)

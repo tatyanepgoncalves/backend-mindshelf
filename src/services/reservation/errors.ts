@@ -23,3 +23,9 @@ export class MaxReservationsExceededError extends Error {
     )
   }
 }
+
+export class ReservationsNotFoundError extends Error {
+  constructor() {
+    super('Nenhuma reserva encontrada com os filtros informados.')
+  }
+}
