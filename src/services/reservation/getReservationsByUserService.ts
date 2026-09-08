@@ -1,4 +1,12 @@
-import { and, count, eq, ilike, isNull, type SQL } from 'drizzle-orm'
+import {
+  and,
+  countDistinct,
+  desc,
+  eq,
+  ilike,
+  isNull,
+  type SQL,
+} from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatDate, formatPhone, formatRelativeTime } from '../../lib/utils.js'
@@ -25,7 +33,7 @@ export class GetReservationsByUserService {
     const whereClause = and(...conditions)
 
     const [totalResult] = await db
-      .select({ total: count() })
+      .select({ total: countDistinct(schema.reservations.id) })
       .from(schema.reservations)
       .innerJoin(schema.books, eq(schema.reservations.bookId, schema.books.id))
       .where(whereClause)
@@ -40,49 +48,43 @@ export class GetReservationsByUserService {
       }
     }
 
-    const rows = await db
-      .select({
-        book: schema.books,
-        reader: schema.users,
-        reservation: schema.reservations,
-      })
-      .from(schema.reservations)
-      .innerJoin(schema.books, eq(schema.reservations.bookId, schema.books.id))
-      .innerJoin(
-        schema.users,
-        eq(schema.reservations.readerId, schema.reservations.readerId)
-      )
-      .where(whereClause)
-      .orderBy(schema.reservations.createdAt)
-      .limit(limit)
-      .offset(offset)
-
-    const formattedReservations = rows.map(({ reservation, book, reader }) => ({
-      book: {
-        author: book.author,
-        coverUrl: book.coverUrl ?? null,
-        id: book.id,
-        isbn: book.isbn ?? null,
-        locationLibrary: book.locationLibrary ?? null,
-        publisher: book.publisher ?? null,
-        synopsis: book.synopsis ?? null,
-        title: book.title,
+    const rows = await db.query.reservations.findMany({
+      limit,
+      offset,
+      orderBy: desc(schema.reservations.createdAt),
+      where: whereClause,
+      with: {
+        book: true,
+        reader: true,
       },
-      createdAt: formatRelativeTime(reservation.createdAt ?? new Date()),
-      id: reservation.id,
+    })
+
+    const formattedReservations = rows.map((item) => ({
+      book: {
+        author: item.book.author,
+        coverUrl: item.book.coverUrl ?? null,
+        id: item.book.id,
+        isbn: item.book.isbn ?? null,
+        locationLibrary: item.book.locationLibrary ?? null,
+        publisher: item.book.publisher ?? null,
+        synopsis: item.book.synopsis ?? null,
+        title: item.book.title,
+      },
+      createdAt: formatRelativeTime(item.createdAt ?? new Date()),
+      id: item.id,
       reader: {
         contact: {
-          address: reader.address ?? null,
-          email: reader.email,
-          phone: reader.phone ? formatPhone(reader.phone) : null,
+          address: item.reader.address ?? null,
+          email: item.reader.email,
+          phone: item.reader.phone ? formatPhone(item.reader.phone) : null,
         },
-        id: reader.id,
-        name: reader.name,
+        id: item.reader.id,
+        name: item.reader.name,
       },
-      reservationDate: reservation.reservationDate
-        ? formatDate(reservation.reservationDate, true)
+      reservationDate: item.reservationDate
+        ? formatDate(item.reservationDate, true)
         : null,
-      status: reservation.status,
+      status: item.status,
     }))
 
     return {
