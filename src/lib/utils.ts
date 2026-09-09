@@ -93,8 +93,8 @@ export const formatRelativeTime = (dateParam: Date | string) => {
     return `Há ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`
   }
 
-  // Passou de 24 horas: retorna a data completa com horário (ex: 07/08/2026, 08:49)
-  return formatDate(date, true)
+  // Passou de 24 horas: retorna a data completa com horário (ex: 07/08/2026)
+  return formatDate(date)
 }
 
 export function generateSlug(text: string): string {
