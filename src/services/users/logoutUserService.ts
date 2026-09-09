@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { redis } from '../../config/ioredis.js'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
-import { UserNotFoundError } from './loginUserService.js'
+import { UserNotFoundError } from './error.js'
 
 export class LogoutUserService {
   async execute(userId: string) {

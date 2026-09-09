@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatPhone, formatRelativeTime } from '../../lib/utils.js'
-import { UserNotFoundError } from './loginUserService.js'
+import { UserNotFoundError } from './error.js'
 
 export class GetUserProfileService {
   async execute(userId: string) {

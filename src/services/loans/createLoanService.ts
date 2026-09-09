@@ -3,44 +3,8 @@ import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime } from '../../lib/utils.js'
 import type { CreateLoanBodySchema } from '../../schemas/loans/createLoanSchema.js'
-
-export class ReaderNotFoundError extends Error {
-  constructor() {
-    super('Leitor não encontrado.')
-  }
-}
-
-export class BookNotFoundError extends Error {
-  constructor() {
-    super('Um ou mais livros informados não foram encontrados.')
-  }
-}
-
-export class BookAlreadyLoanedError extends Error {
-  constructor(bookTitle?: string) {
-    super(
-      bookTitle
-        ? `O livro "${bookTitle}" já possui um empréstimo ativo no momento.`
-        : 'Um ou mais livros já possuem um empréstimo ativo no momento.'
-    )
-  }
-}
-
-export class MaxLoansExceededError extends Error {
-  constructor(currentCount: number, requestedCount: number) {
-    super(
-      `O leitor possui ${currentCount} empréstimo(s) ativo(s). Solicitar mais ${requestedCount} ultrapassa o limite máximo de 3.`
-    )
-  }
-}
-
-export class DuplicateBooksInRequestError extends Error {
-  constructor() {
-    super(
-      'Não é permitido incluir o mesmo livro mais de uma vez no mesmo empréstimo.'
-    )
-  }
-}
+import { ReaderNotFound } from '../readers/errors.js'
+import { BookHasLoan, LimitExcededLoan } from './errors.js'
 
 export class CreateLoanService {
   async execute(data: CreateLoanBodySchema) {
@@ -56,7 +20,7 @@ export class CreateLoanService {
         ),
       })
       if (!existingReader) {
-        throw new Error('Leitor não encontrado.')
+        throw new ReaderNotFound()
       }
 
       // Conta empréstimos ativos em `loanItems`
@@ -73,9 +37,7 @@ export class CreateLoanService {
       ).length
 
       if (readerActiveCount + requestedBooks.length > 3) {
-        throw new Error(
-          `Limite excedido. O leitor já possui ${readerActiveCount} empréstimos ativos.`
-        )
+        throw new LimitExcededLoan(readerActiveCount)
       }
 
       // Verifica conflito de livros já emprestados
@@ -87,7 +49,7 @@ export class CreateLoanService {
         ),
       })
       if (activeBookLoans.length > 0) {
-        throw new Error('Um ou mais livros já possuem empréstimos ativos.')
+        throw new BookHasLoan()
       }
 
       // Busca livros do banco

@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { GetReservationsQuerySchema } from '../../schemas/reservations/getReservationsSchema.js'
 import { ReservationsNotFoundError } from '../../services/reservation/errors.js'
 import { GetReservationsByUserService } from '../../services/reservation/getReservationsByUserService.js'
-import { UserNotFoundError } from '../../services/users/loginUserService.js'
+import { UserNotFoundError } from '../../services/users/error.js'
 
 export class GetReservationsByUserController {
   async handle(

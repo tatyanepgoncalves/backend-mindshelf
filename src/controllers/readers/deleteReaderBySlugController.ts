@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { DeleteReaderBySlugParamsSchema } from '../../schemas/readers/deleteReaderBySlugSchema.js'
 import { DeleteReaderBySlugService } from '../../services/readers/deleteReaderBySlugService.js'
-import { UserNotFoundError } from '../../services/users/loginUserService.js'
+import { UserNotFoundError } from '../../services/users/error.js'
 
 export class DeleteReaderBySlugController {
   async handle(

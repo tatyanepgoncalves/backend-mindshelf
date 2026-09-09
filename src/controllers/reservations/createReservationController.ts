@@ -3,7 +3,7 @@ import type { CreateReservationBodySchema } from '../../schemas/reservations/cre
 import {
   BookNotFoundError,
   ReaderNotFoundError,
-} from '../../services/loans/createLoanService.js'
+} from '../../services/loans/errors.js'
 import { BookAlreadyReservedError } from '../../services/reservation/changeReservationBookService.js'
 import { CreateReservationService } from '../../services/reservation/createReservationService.js'
 

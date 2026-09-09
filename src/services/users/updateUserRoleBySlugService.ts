@@ -8,7 +8,7 @@ import {
   generateSlug,
 } from '../../lib/utils.js'
 import type { UpdateUserRoleBodySchema } from '../../schemas/users/updateUserRoleSchema.js'
-import { UserNotFoundError } from './loginUserService.js'
+import { UserNotFoundError } from './error.js'
 
 export class UserNotAuthoridedError extends Error {
   constructor() {

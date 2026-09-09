@@ -17,9 +17,6 @@ export const updateUserSchema = {
     password: z.string().min(8).optional(),
     phone: z.string().min(10).max(15).optional(),
   }),
-  params: z.object({
-    id: z.string().uuid(),
-  }),
   response: {
     200: z.object({
       message: z.string().optional(),
@@ -42,5 +39,4 @@ export const updateUserSchema = {
   },
 }
 
-export type UpdateUserParamsSchema = z.infer<typeof updateUserSchema.params>
 export type UpdateUserBodySchema = z.infer<typeof updateUserSchema.body>

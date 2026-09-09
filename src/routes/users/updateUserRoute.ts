@@ -8,7 +8,7 @@ export const updateUserRoute: FastifyPluginCallbackZod = (app) => {
   const updateUserController = new UpdateUserController()
 
   app.patch(
-    '/users/:id',
+    '/users/me',
     {
       preHandler: [authMiddleware, authorizeSelf],
       schema: updateUserSchema,

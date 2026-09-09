@@ -5,13 +5,7 @@ import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatPhone, formatRelativeTime } from '../../lib/utils.js'
 import type { UpdateUserBodySchema } from '../../schemas/users/updateUserSchema.js'
-import { UserNotFoundError } from './loginUserService.js'
-
-export class UserAlreadyExistsError extends Error {
-  constructor() {
-    super('Usuário com email ou telefone já cadastrado.')
-  }
-}
+import { UserNotFoundError } from './error.js'
 
 export class UpdateUserService {
   async execute(userId: string, data: UpdateUserBodySchema) {

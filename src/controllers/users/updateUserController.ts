@@ -1,26 +1,24 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type {
-  UpdateUserBodySchema,
-  UpdateUserParamsSchema,
-} from '../../schemas/users/updateUserSchema.js'
-import { UserAlreadyExistsError } from '../../services/users/createUserService.js'
-import { UserNotFoundError } from '../../services/users/loginUserService.js'
+import type { UpdateUserBodySchema } from '../../schemas/users/updateUserSchema.js'
+import {
+  UserAlreadyExistsError,
+  UserNotFoundError,
+} from '../../services/users/error.js'
 import { UpdateUserService } from '../../services/users/updateUserService.js'
 
 export class UpdateUserController {
   async handle(
     request: FastifyRequest<{
       Body: UpdateUserBodySchema
-      Params: UpdateUserParamsSchema
     }>,
     reply: FastifyReply
   ) {
     // Implementation for handling update user request
-    const { id } = request.params
+    const userId = request.user?.id
     const updateUserService = new UpdateUserService()
 
     try {
-      const result = await updateUserService.execute(id, request.body)
+      const result = await updateUserService.execute(userId, request.body)
 
       console.log(result)
 

@@ -1,17 +1,17 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type { UpdateStatusLoanByIdBodySchema } from '../../schemas/loans/updateStatusLoanByIdSchema.js'
-import type { UpdateUserParamsSchema } from '../../schemas/users/updateUserSchema.js'
-import {
-  LoanItemAlreadyReturnedError,
-  LoanItemNotFoundError,
-  UpdateStatusLoanByIdService,
-} from '../../services/loans/updateStatusLoanByIdService.js'
+import type {
+  UpdateStatusLoanByIdBodySchema,
+  UpdateStatusLoanByIdParamsSchema,
+} from '../../schemas/loans/updateStatusLoanByIdSchema.js'
+import { LoanItemNotFoundError } from '../../services/loans/deleteLoanItemService.js'
+import { LoanItemAlreadyReturnedError } from '../../services/loans/errors.js'
+import { UpdateStatusLoanByIdService } from '../../services/loans/updateStatusLoanByIdService.js'
 
 export class UpdateStatusLoanByIdController {
   async handle(
     request: FastifyRequest<{
       Body: UpdateStatusLoanByIdBodySchema
-      Params: UpdateUserParamsSchema
+      Params: UpdateStatusLoanByIdParamsSchema
     }>,
     reply: FastifyReply
   ) {

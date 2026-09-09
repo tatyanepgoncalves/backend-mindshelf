@@ -2,9 +2,9 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { LoginUserSchema } from '../../schemas/users/loginUserSchema.js'
 import {
   CredentialsInvalidError,
-  LoginUserService,
   UserNotFoundError,
-} from '../../services/users/loginUserService.js'
+} from '../../services/users/error.js'
+import { LoginUserService } from '../../services/users/loginUserService.js'
 
 export class LoginUserController {
   async handle(

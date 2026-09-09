@@ -8,18 +8,7 @@ import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatPhone, formatRelativeTime } from '../../lib/utils.js'
 import type { LoginUserSchema } from '../../schemas/users/loginUserSchema.js'
-
-export class CredentialsInvalidError extends Error {
-  constructor() {
-    super('Credenciais de acesso inválidas. Tente novamente.')
-  }
-}
-
-export class UserNotFoundError extends Error {
-  constructor() {
-    super('Usuário com as credenciais fornecidas não encontrado.')
-  }
-}
+import { CredentialsInvalidError, UserNotFoundError } from './error.js'
 
 export class LoginUserService {
   async execute({ email, password }: LoginUserSchema) {

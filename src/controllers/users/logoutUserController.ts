@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import { UserNotFoundError } from '../../services/users/loginUserService.js'
+import { UserNotFoundError } from '../../services/users/error.js'
 import { LogoutUserService } from '../../services/users/logoutUserService.js'
 
 export class LogoutUserController {

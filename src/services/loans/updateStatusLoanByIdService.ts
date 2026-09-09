@@ -3,18 +3,8 @@ import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime } from '../../lib/utils.js'
 import type { UpdateStatusLoanByIdBodySchema } from '../../schemas/loans/updateStatusLoanByIdSchema.js'
-
-export class LoanItemNotFoundError extends Error {
-  constructor() {
-    super('Item de empréstimo não encontrado.')
-  }
-}
-
-export class LoanItemAlreadyReturnedError extends Error {
-  constructor() {
-    super('Este livro já foi devolvido anteriormente.')
-  }
-}
+import { LoanItemNotFoundError } from './deleteLoanItemService.js'
+import { LoanItemAlreadyReturnedError } from './errors.js'
 
 export class UpdateStatusLoanByIdService {
   async execute(itemId: string, data: UpdateStatusLoanByIdBodySchema) {

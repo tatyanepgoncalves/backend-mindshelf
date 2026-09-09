@@ -1,7 +1,7 @@
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { UpdateUserRoleBySlugController } from '../../controllers/users/updateUserRoleBySlugController.js'
 import { authMiddleware } from '../../middlewares/authMiddleware.js'
-import { verifyUserRole } from '../../middlewares/verifyUserRole.js'
+import { authorizeAdminOrVolunteer } from '../../middlewares/authorizeAdminOrVolunteer.js'
 import { updateUserRoleSchema } from '../../schemas/users/updateUserRoleSchema.js'
 
 export const updateUserRoleBySlugRoute: FastifyPluginCallbackZod = (app) => {
@@ -10,7 +10,7 @@ export const updateUserRoleBySlugRoute: FastifyPluginCallbackZod = (app) => {
   app.patch(
     '/users/role/:slug',
     {
-      preHandler: [authMiddleware, verifyUserRole('ADMIN')],
+      preHandler: [authMiddleware, authorizeAdminOrVolunteer],
       schema: updateUserRoleSchema,
     },
     async (request, reply) => updateUserRoleController.handle(request, reply)

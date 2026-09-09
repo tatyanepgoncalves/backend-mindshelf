@@ -6,13 +6,7 @@ import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime, generateSlug } from '../../lib/utils.js'
 import type { CreateUserSchema } from '../../schemas/users/createUserSchema.js'
-
-// Erro personalizado para capturar o conflito de email e telefone (HTTP 409)
-export class UserAlreadyExistsError extends Error {
-  constructor() {
-    super('Usuário com email ou telefone já existe.')
-  }
-}
+import { UserAlreadyExistsError } from './error.js'
 
 export class CreateUserService {
   async execute(data: CreateUserSchema) {

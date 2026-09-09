@@ -7,7 +7,7 @@ import {
   ReaderNotFoundError,
   UpdateReaderBySlugService,
 } from '../../services/readers/updateReaderBySlugService.js'
-import { UserAlreadyExistsError } from '../../services/users/createUserService.js'
+import { UserAlreadyExistsError } from '../../services/users/error.js'
 
 export class UpdateReaderBySlugController {
   async handle(

@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { DeleteUserByTokenService } from '../../services/users/deleteUserByTokenService.js'
-import { UserNotFoundError } from '../../services/users/loginUserService.js'
+import { UserNotFoundError } from '../../services/users/error.js'
 
 export class DeleteUserByTokenController {
   async handle(request: FastifyRequest, reply: FastifyReply) {

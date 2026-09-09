@@ -1,9 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { CreateUserSchema } from '../../schemas/users/createUserSchema.js'
-import {
-  CreateUserService,
-  UserAlreadyExistsError,
-} from '../../services/users/createUserService.js'
+import { CreateUserService } from '../../services/users/createUserService.js'
+import { UserAlreadyExistsError } from '../../services/users/error.js'
 
 export class CreateUserController {
   async handle(

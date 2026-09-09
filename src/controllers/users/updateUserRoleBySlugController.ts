@@ -3,8 +3,10 @@ import type {
   UpdateUserRoleBodySchema,
   UpdateUserRoleParamsSchema,
 } from '../../schemas/users/updateUserRoleSchema.js'
-import { UserAlreadyExistsError } from '../../services/users/createUserService.js'
-import { UserNotFoundError } from '../../services/users/loginUserService.js'
+import {
+  UserAlreadyExistsError,
+  UserNotFoundError,
+} from '../../services/users/error.js'
 import {
   UpdateUserRoleBySlugService,
   UserNotAuthoridedError,
@@ -31,8 +33,6 @@ export class UpdateUserRoleBySlugController {
       if (error instanceof UserNotFoundError) {
         return reply.status(404).send({ message: error.message })
       }
-
-      console.log(error.message)
 
       if (error instanceof UserNotAuthoridedError) {
         return reply.status(403).send({ message: error.message })

@@ -1,13 +1,14 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { CreateLoanBodySchema } from '../../schemas/loans/createLoanSchema.js'
+import { CreateLoanService } from '../../services/loans/createLoanService.js'
 import {
   BookAlreadyLoanedError,
   BookNotFoundError,
-  CreateLoanService,
   DuplicateBooksInRequestError,
+  LimitExcededLoan,
   MaxLoansExceededError,
   ReaderNotFoundError,
-} from '../../services/loans/createLoanService.js'
+} from '../../services/loans/errors.js'
 
 export class CreateLoanController {
   async handle(
@@ -30,7 +31,8 @@ export class CreateLoanController {
       if (
         error instanceof BookAlreadyLoanedError ||
         error instanceof MaxLoansExceededError ||
-        error instanceof DuplicateBooksInRequestError
+        error instanceof DuplicateBooksInRequestError ||
+        error instanceof LimitExcededLoan
       ) {
         return reply.status(409).send({ message: error.message })
       }
