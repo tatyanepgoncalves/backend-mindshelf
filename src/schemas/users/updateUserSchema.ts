@@ -10,12 +10,12 @@ export const updateUserSchema = {
     },
   ],
   body: z.object({
-    address: z.string().min(3).max(255).optional(),
     email: z.string().email().optional(),
     image: z.string().optional(),
     name: z.string().min(3).max(255).optional(),
     password: z.string().min(8).optional(),
-    phone: z.string().min(10).max(15).optional(),
+    address: z.string().min(3).optional().or(z.literal('')),
+    phone: z.string().min(10).optional().or(z.literal('')),
   }),
   response: {
     200: z.object({
