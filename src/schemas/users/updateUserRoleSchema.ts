@@ -14,11 +14,11 @@ export const updateUserRoleSchema = {
   }),
   body: z.object({
     role: z.enum(['LEITOR', 'ADMIN', 'VOLUNTARIO']),
-    address: z.string().min(3).max(255).optional(),
     email: z.string().email().optional(),
     image: z.string().optional(),
     name: z.string().min(3).max(255).optional(),
-    phone: z.string().min(10).max(15).optional(),
+    address: z.string().min(3).optional().or(z.literal('')),
+    phone: z.string().min(10).optional().or(z.literal('')),
   }),
   response: {
     200: z.object({
@@ -28,7 +28,7 @@ export const updateUserRoleSchema = {
         email: z.string().email().nullable(),
         id: z.string().uuid(),
         image: z.string().nullable().optional(),
-        name: z.string().min(3).max(255),
+        name: z.string(),
         phone: z.string().nullable().optional(),
         role: z.enum(['LEITOR', 'ADMIN', 'VOLUNTARIO']).default('LEITOR'),
         updatedAt: z.string().nullable(),
