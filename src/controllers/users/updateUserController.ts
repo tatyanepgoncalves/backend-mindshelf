@@ -20,8 +20,6 @@ export class UpdateUserController {
     try {
       const result = await updateUserService.execute(userId, request.body)
 
-      console.log(result)
-
       return reply.status(200).send(result)
       // biome-ignore lint/suspicious/noExplicitAny: it's necessary
     } catch (error: any) {
