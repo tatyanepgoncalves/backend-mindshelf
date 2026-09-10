@@ -33,8 +33,9 @@ export class UpdateUserService {
       updateData.phone = data.phone
     }
     if (data.image) {
-      updateData.image = data.image === '' ? null : data.image
+      updateData.image = data.image
     }
+
     if (data.address) {
       updateData.address = data.address
     }
@@ -63,9 +64,7 @@ export class UpdateUserService {
         id: updatedUser.id,
         image: updatedUser.image,
         name: updatedUser.name,
-        phone: updatedUser.phone
-          ? formatPhone(updatedUser.phone)
-          : updatedUser.phone,
+        phone: updatedUser.phone ? formatPhone(updatedUser.phone) : null,
         updatedAt: updatedUser.updatedAt
           ? formatRelativeTime(updatedUser.updatedAt)
           : updatedUser.updatedAt,
