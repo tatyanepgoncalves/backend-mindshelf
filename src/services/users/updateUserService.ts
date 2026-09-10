@@ -33,7 +33,7 @@ export class UpdateUserService {
       updateData.phone = data.phone
     }
     if (data.image) {
-      updateData.image = data.image
+      updateData.image = data.image === '' ? null : data.image
     }
     if (data.address) {
       updateData.address = data.address
