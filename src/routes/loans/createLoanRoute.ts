@@ -1,7 +1,6 @@
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { CreateLoanController } from '../../controllers/loans/createLoansController.js'
 import { authMiddleware } from '../../middlewares/authMiddleware.js'
-import { authorizeAdminOrVolunteer } from '../../middlewares/authorizeAdminOrVolunteer.js'
 import { createLoanSchema } from '../../schemas/loans/createLoanSchema.js'
 
 export const createLoanRoute: FastifyPluginCallbackZod = (app) => {
@@ -10,7 +9,7 @@ export const createLoanRoute: FastifyPluginCallbackZod = (app) => {
   app.post(
     '/loans',
     {
-      preHandler: [authMiddleware, authorizeAdminOrVolunteer],
+      preHandler: [authMiddleware],
       schema: createLoanSchema,
     },
     async (request, reply) => controller.handle(request, reply)
