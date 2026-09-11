@@ -7,7 +7,7 @@ import { updateUserSchema } from '../../schemas/users/updateUserSchema.js'
 export const updateUserAvatarRoute: FastifyPluginCallbackZod = (app) => {
   const updateUserController = new UpdateUserController()
 
-  app.patch(
+  app.put(
     '/users/me/avatar',
     {
       preHandler: [authMiddleware, authorizeSelf],

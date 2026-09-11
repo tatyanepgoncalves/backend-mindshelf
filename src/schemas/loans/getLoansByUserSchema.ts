@@ -4,6 +4,9 @@ export const getLoansByUserSchema = {
   tags: ['Empréstimos'],
   summary: 'Lista histórico e empréstimos ativos do usuário logado',
   security: [{ bearerAuth: [] }],
+  params: z.object({
+    userId: z.string().uuid(),
+  }),
   querystring: z.object({
     title: z.string().optional(),
     status: z.enum(['ATIVO', 'DEVOLVIDO', 'ATRASADO', 'CANCELADO']).optional(),
@@ -46,4 +49,8 @@ export const getLoansByUserSchema = {
 
 export type GetLoansByUserQuerySchema = z.infer<
   typeof getLoansByUserSchema.querystring
+>
+
+export type GetLoansByUserParamsSchema = z.infer<
+  typeof getLoansByUserSchema.params
 >
