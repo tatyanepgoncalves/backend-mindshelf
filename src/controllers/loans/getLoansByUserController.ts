@@ -1,27 +1,22 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type { GetLoansByUserQuerySchema } from '../../schemas/loans/getLoansByUserSchema.js'
 import { GetLoansByUserService } from '../../services/loans/getLoansByUserService.js'
-import { LoansNotFoundError } from '../../services/loans/getLoansService.js'
 
 export class GetLoansByUserController {
-  async handle(
-    request: FastifyRequest<{ Querystring: GetLoansByUserQuerySchema }>,
-    reply: FastifyReply
-  ) {
-    const getLoansByUserService = new GetLoansByUserService()
+  async handle(request: FastifyRequest, reply: FastifyReply) {
+    const service = new GetLoansByUserService()
     const userId = request.user?.id
 
+    if (!userId) {
+      return reply.status(401).send({
+        message: 'Usuário não autenticado.',
+      })
+    }
+
     try {
-      const result = await getLoansByUserService.execute(userId, request.query)
+      const result = await service.execute(userId)
 
       return reply.status(200).send(result)
-    } catch (error) {
-      if (error instanceof LoansNotFoundError) {
-        return reply.status(404).send({
-          message: error.message,
-        })
-      }
-
+    } catch {
       return reply.status(500).send({
         message: 'Erro interno ao buscar empréstimos.',
       })
