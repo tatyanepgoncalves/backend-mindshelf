@@ -1,21 +1,15 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import type {
-  GetLoansByUserParamsSchema,
-  GetLoansByUserQuerySchema,
-} from '../../schemas/loans/getLoansByUserSchema.js'
+import type { GetLoansByUserQuerySchema } from '../../schemas/loans/getLoansByUserSchema.js'
 import { GetLoansByUserService } from '../../services/loans/getLoansByUserService.js'
 import { LoansNotFoundError } from '../../services/loans/getLoansService.js'
 
 export class GetLoansByUserController {
   async handle(
-    request: FastifyRequest<{
-      Querystring: GetLoansByUserQuerySchema
-      Params: GetLoansByUserParamsSchema
-    }>,
+    request: FastifyRequest<{ Querystring: GetLoansByUserQuerySchema }>,
     reply: FastifyReply
   ) {
     const getLoansByUserService = new GetLoansByUserService()
-    const { userId } = request.params as GetLoansByUserParamsSchema
+    const userId = request.user?.id
 
     try {
       const result = await getLoansByUserService.execute(userId, request.query)

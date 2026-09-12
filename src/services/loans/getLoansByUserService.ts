@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, isNull, type SQL, sql } from 'drizzle-orm'
+import { and, count, desc, eq, ilike, isNull, sql } from 'drizzle-orm'
 import { db } from '../../db/connection.js'
 import { schema } from '../../db/schema/index.js'
 import { formatRelativeTime } from '../../lib/utils.js'
@@ -9,9 +9,10 @@ export class GetLoansByUserService {
     const { title, status, mes, page, limit } = query
     const offset = (page - 1) * limit
 
-    const conditions: SQL[] = [
+    const conditions = [
       eq(schema.loans.readerId, userId),
       isNull(schema.loans.deletedAt),
+      isNull(schema.loansItems.deletedAt),
     ]
 
     if (status) {
@@ -23,10 +24,11 @@ export class GetLoansByUserService {
     }
 
     if (mes) {
-      const monthNumber = Number(mes)
-      if (!Number.isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+      const month = Number(mes)
+
+      if (month >= 1 && month <= 12) {
         conditions.push(
-          sql`EXTRACT(MONTH FROM ${schema.loans.createdAt}) = ${monthNumber}`
+          sql`EXTRACT(MONTH FROM ${schema.loans.createdAt}) = ${month}`
         )
       }
     }
@@ -38,25 +40,12 @@ export class GetLoansByUserService {
       .from(schema.loans)
       .innerJoin(
         schema.loansItems,
-        eq(schema.loans.id, schema.loansItems.loanId)
+        eq(schema.loansItems.loanId, schema.loans.id)
       )
-      .innerJoin(schema.books, eq(schema.loansItems.bookId, schema.books.id))
+      .innerJoin(schema.books, eq(schema.books.id, schema.loansItems.bookId))
       .where(whereClause)
 
-    const total = totalResult?.total ?? 0
-
-    if (total === 0) {
-      return {
-        loans: [],
-        message: 'Empréstimos recuperados com sucesso.',
-        pagination: {
-          limit,
-          page,
-          total: 0,
-          totalPages: 1,
-        },
-      }
-    }
+    const total = Number(totalResult?.total ?? 0)
 
     const rows = await db
       .select({
@@ -69,34 +58,35 @@ export class GetLoansByUserService {
         },
         createdAt: schema.loansItems.createdAt,
         dueDate: schema.loansItems.dueDate,
-        itemId: schema.loansItems.id,
+        id: schema.loansItems.id,
+        loanDate: schema.loans.createdAt,
         returnDate: schema.loansItems.returnDate,
         status: schema.loansItems.status,
-        updatedAt: schema.loansItems.updatedAt,
       })
       .from(schema.loans)
       .innerJoin(
         schema.loansItems,
-        eq(schema.loans.id, schema.loansItems.loanId)
+        eq(schema.loansItems.loanId, schema.loans.id)
       )
-      .innerJoin(schema.books, eq(schema.loansItems.bookId, schema.books.id))
+      .innerJoin(schema.books, eq(schema.books.id, schema.loansItems.bookId))
       .where(whereClause)
       .orderBy(desc(schema.loans.createdAt))
       .limit(limit)
       .offset(offset)
 
-    const formattedLoans = rows.map((item) => ({
-      book: item.book,
-      createdAt: item.createdAt ? formatRelativeTime(item.createdAt) : null,
-      dueDate: item.dueDate ? formatRelativeTime(item.dueDate) : null,
-      id: item.itemId,
-      returnDate: item.returnDate ? formatRelativeTime(item.returnDate) : null,
-      status: item.status,
-      updatedAt: item.updatedAt ? formatRelativeTime(item.updatedAt) : null,
+    const loans = rows.map((loan) => ({
+      book: loan.book,
+      createdAt: formatRelativeTime(loan.createdAt),
+      dueDate: formatRelativeTime(loan.dueDate),
+      id: loan.id,
+      loanDate: formatRelativeTime(loan.loanDate),
+      renewalsCount: 0,
+      returnDate: loan.returnDate ? formatRelativeTime(loan.returnDate) : null,
+      status: loan.status,
     }))
 
     return {
-      loans: formattedLoans,
+      loans,
       message: 'Empréstimos recuperados com sucesso.',
       pagination: {
         limit,
